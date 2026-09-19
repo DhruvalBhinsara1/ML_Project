@@ -26,14 +26,14 @@
         {% block top_bar %}
         <div class="top-bar" id="top-bar">
             <div class="breadcrumbs">
-                <a href="{{ url_for('home') }}">Home</a>
+                <a href="{{ url_for('home') }}">INDEX</a>
                 <span class="breadcrumb-separator">/</span>
                 <span class="breadcrumb-active">{% block page_name %}Overview{% endblock %}</span>
             </div>
             <div class="top-badge-indicator">
                 <span class="indicator-dot"></span>
-                <span class="indicator-label">Analytics Engine</span>
-                <span class="indicator-status">Active</span>
+                <span class="indicator-label">R-ENGINE 4.4</span>
+                <span class="indicator-status">ACTIVE</span>
             </div>
         </div>
         {% endblock %}
@@ -43,7 +43,7 @@
         </div>
 
         <div class="footer-text" id="footer-text">
-            <span>House Predictor</span> — Intelligent Real Estate Valuation &amp; Market Analytics
+            <span>House Predictor</span> — Empirical Valuation &amp; Real Estate Analytics Engine &bull; Port 5001
         </div>
     </main>
 
@@ -67,7 +67,7 @@
             }
         }
 
-        // Preset Helper for quick pills and chips
+        // Preset Helper with exact argument matching
         function setPreset(inputId, value) {
             const input = document.getElementById(inputId);
             if (!input) return;
@@ -75,16 +75,16 @@
             input.dispatchEvent(new Event('input', { bubbles: true }));
             input.dispatchEvent(new Event('change', { bubbles: true }));
 
-            syncAllControls(input);
+            syncAll(input);
         }
 
-        // Synchronize active states across segmented buttons, quick pills, and chips
-        function syncAllControls(target) {
+        // Synchronize active states across segmented buttons and chip buttons
+        function syncAll(target) {
             if (!target) return;
             const currentVal = String(target.value).trim();
             const id = target.id;
 
-            // Sync segmented controls
+            // Sync segmented controls with data-for
             document.querySelectorAll(`.segmented-control[data-for="${id}"] .segment-btn`).forEach(btn => {
                 const val = btn.getAttribute('data-value');
                 if (val !== null && String(val) === currentVal) {
@@ -94,17 +94,7 @@
                 }
             });
 
-            // Sync quick pills
-            document.querySelectorAll(`.quick-pills[data-for="${id}"] .quick-pill-btn`).forEach(btn => {
-                const val = btn.getAttribute('data-value');
-                if (val !== null && String(val) === currentVal) {
-                    btn.classList.add('active');
-                } else {
-                    btn.classList.remove('active');
-                }
-            });
-
-            // Legacy chip groups
+            // Sync chip buttons in group
             const group = target.closest('.form-group');
             if (group) {
                 group.querySelectorAll('.chip-btn').forEach(btn => {
@@ -121,13 +111,13 @@
 
         document.addEventListener('input', function(e) {
             if (e.target.matches('input[type="number"], input[type="text"], input[type="hidden"], select')) {
-                syncAllControls(e.target);
+                syncAll(e.target);
             }
         });
 
         document.addEventListener('change', function(e) {
             if (e.target.matches('select, input[type="number"], input[type="text"], input[type="hidden"]')) {
-                syncAllControls(e.target);
+                syncAll(e.target);
             }
         });
 

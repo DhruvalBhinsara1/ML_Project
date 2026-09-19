@@ -1,59 +1,59 @@
 <aside class="sidebar" id="sidebar">
     <a href="{{ url_for('home') }}" class="sidebar-header">
         <div class="sidebar-logo">
-            <span class="logo-mark"><i class="fa-solid fa-house-chimney"></i></span>
+            <span class="logo-mark">HP</span>
         </div>
         <div class="sidebar-brand-text">
             <div class="brand-title">House Predictor</div>
-            <div class="brand-subtitle">Real Estate Valuation</div>
+            <div class="brand-subtitle">Empirical Valuation Engine</div>
         </div>
     </a>
     
-    <div class="nav-section-title">Valuation Tools</div>
+    <div class="nav-section-title">Navigation</div>
     <nav>
         <a href="{{ url_for('home') }}" class="nav-link {% if active_page == 'home' %}active{% endif %}">
             <div class="nav-link-content">
                 <i class="fa-solid fa-table-columns"></i>
-                <span>Overview</span>
+                <span>Index Overview</span>
             </div>
         </a>
+        <a href="{{ url_for('about') }}" class="nav-link {% if active_page == 'about' %}active{% endif %}">
+            <div class="nav-link-content">
+                <i class="fa-solid fa-book-open"></i>
+                <span>Monograph &amp; Arch</span>
+            </div>
+        </a>
+    </nav>
+
+    <div class="nav-section-title">Statistical Engines</div>
+    <nav>
         <a href="{{ url_for('regression') }}" class="nav-link {% if active_page == 'regression' %}active{% endif %}">
             <div class="nav-link-content">
                 <i class="fa-solid fa-chart-line"></i>
-                <span>Price Estimator</span>
+                <span>Price Valuation</span>
             </div>
             <span class="nav-badge">OLS</span>
         </a>
         <a href="{{ url_for('classification') }}" class="nav-link {% if active_page == 'classification' %}active{% endif %}">
             <div class="nav-link-content">
                 <i class="fa-solid fa-sitemap"></i>
-                <span>Property Tier</span>
+                <span>Segment Classifier</span>
             </div>
-            <span class="nav-badge">Classify</span>
+            <span class="nav-badge">CART+RF</span>
         </a>
         <a href="{{ url_for('clustering') }}" class="nav-link {% if active_page == 'clustering' %}active{% endif %}">
             <div class="nav-link-content">
                 <i class="fa-solid fa-layer-group"></i>
-                <span>Market Clusters</span>
+                <span>Property Clusters</span>
             </div>
-            <span class="nav-badge">Clusters</span>
+            <span class="nav-badge">H-CLUST</span>
         </a>
         <a href="{{ url_for('recommendation') }}" class="nav-link {% if active_page == 'recommendation' %}active{% endif %}">
             <div class="nav-link-content">
-                <i class="fa-solid fa-compass"></i>
-                <span>Property Matcher</span>
+                <i class="fa-solid fa-crosshairs"></i>
+                <span>Property Matching</span>
             </div>
             <span class="nav-badge">KNN</span>
-        </a>
-    </nav>
-
-    <div class="nav-section-title">Documentation</div>
-    <nav>
-        <a href="{{ url_for('about') }}" class="nav-link {% if active_page == 'about' %}active{% endif %}">
-            <div class="nav-link-content">
-                <i class="fa-solid fa-book-open"></i>
-                <span>Methodology &amp; Arch</span>
-            </div>
         </a>
     </nav>
 
@@ -64,12 +64,12 @@
                 <span class="telemetry-dot"></span>
                 <span>SYSTEM STATUS</span>
             </div>
-            <span class="widget-badge">ONLINE</span>
+            <span class="widget-badge">OPERATIONAL</span>
         </div>
-        <div class="widget-mid">200,000 Verified Properties</div>
+        <div class="widget-mid">R-4.4 Statistical Subprocess</div>
         <div class="widget-bot">
-            <span>42 Metros</span>
-            <span>Port 5001</span>
+            <span>200,000 OBS</span>
+            <span>PORT 5001</span>
         </div>
     </div>
 </aside>
