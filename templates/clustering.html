@@ -1,20 +1,19 @@
 {% extends "base.html" %}
 
-{% block title %}Property Clustering • Dendrogram • House Predictor{% endblock %}
+{% block title %}Market Clusters • House Predictor{% endblock %}
 
-{% block page_name %}Property Clustering{% endblock %}
+{% block page_name %}Market Clusters{% endblock %}
 
 {% block content %}
 <section id="clustering">
     <div class="form-header">
-        <div class="header-folio">
-            <span class="folio-tag">SPECIFICATION 03</span>
-            <span class="folio-sep">&bull;</span>
-            <span>AGGLOMERATIVE DISTANCE MATRIX</span>
+        <div class="header-badge">
+            <i class="fa-solid fa-layer-group"></i>
+            <span>Hierarchical Clustering &bull; Market Dendrogram</span>
         </div>
         <div class="header-text">
-            <h2>Hierarchical Clustering &amp; Dendrogram</h2>
-            <p>Group multi-attribute housing data into natural topological clusters using standardized distance metrics and iterative variance linkage.</p>
+            <h2>Explore Market Segments &amp; Clusters</h2>
+            <p>Group multi-attribute housing data into natural property clusters using hierarchical distance linkage to reveal pricing submarkets.</p>
         </div>
     </div>
 
@@ -23,40 +22,39 @@
             
             <div class="form-group">
                 <div class="form-group-header">
-                    <label><i class="fa-solid fa-code-merge"></i> Linkage Metric</label>
-                    <span class="label-hint">AGGLOMERATION RULE</span>
+                    <label><i class="fa-solid fa-diagram-project"></i> Clustering Method (Linkage)</label>
+                    <span class="label-hint">Algorithm rule</span>
                 </div>
-                <div class="input-group">
-                    <div class="input-icon"><i class="fa-solid fa-diagram-project"></i></div>
-                    <div class="select-wrapper">
-                        <select name="linkage" id="clust-linkage">
-                            <option value="ward">Ward's Minimum Variance (Recommended)</option>
-                            <option value="complete">Complete Linkage (Maximum Distance)</option>
-                            <option value="average">Average Linkage (Mean Distance)</option>
-                            <option value="single">Single Linkage (Minimum Distance)</option>
-                        </select>
-                    </div>
+                <div class="select-wrapper">
+                    <select name="linkage" id="clust-linkage">
+                        <option value="ward">Ward's Minimum Variance (Recommended)</option>
+                        <option value="complete">Complete Linkage (Separated Clusters)</option>
+                        <option value="average">Average Linkage (Mean Distance)</option>
+                        <option value="single">Single Linkage (Minimum Distance)</option>
+                    </select>
                 </div>
             </div>
 
             <div class="form-group">
                 <div class="form-group-header">
-                    <label><i class="fa-solid fa-hashtag"></i> Cluster Boundary (k)</label>
-                    <span class="label-hint">2 - 10 CLUSTERS</span>
+                    <label><i class="fa-solid fa-hashtag"></i> Number of Clusters (k)</label>
+                    <span class="label-hint">Submarket segments</span>
                 </div>
-                <div class="input-group">
-                    <div class="input-icon"><i class="fa-solid fa-layer-group"></i></div>
-                    <input type="number" id="clust-k" name="clusters" value="3" min="2" max="10">
-                    <div class="input-suffix">Clusters</div>
+                <div class="segmented-control" data-for="clust-k">
+                    <button type="button" class="segment-btn" data-value="2" onclick="selectSegment('clust-k', 2, this)">2 Clusters</button>
+                    <button type="button" class="segment-btn active" data-value="3" onclick="selectSegment('clust-k', 3, this)">3 Clusters</button>
+                    <button type="button" class="segment-btn" data-value="4" onclick="selectSegment('clust-k', 4, this)">4 Clusters</button>
+                    <button type="button" class="segment-btn" data-value="5" onclick="selectSegment('clust-k', 5, this)">5 Clusters</button>
                 </div>
+                <input type="hidden" id="clust-k" name="clusters" value="3" min="2" max="10">
             </div>
 
         </div>
 
-        <button type="submit" class="submit-btn" id="clust-submit-btn">
+        <button type="submit" class="natural-btn-primary" id="clust-submit-btn">
             <i class="fa-solid fa-spinner spinner"></i>
-            <span class="btn-text"><i class="fa-solid fa-bezier-curve"></i> Generate Taxonomic Dendrogram</span>
-            <span class="loading-text">Computing Euclidean Distance Matrix...</span>
+            <span class="btn-text">Generate Cluster Dendrogram &rarr;</span>
+            <span class="loading-text">Computing Hierarchical Dendrogram...</span>
         </button>
     </form>
 
@@ -65,11 +63,11 @@
         <div class="image-preview-card" style="margin-top: 0;">
             <div class="image-preview-header">
                 <div class="image-preview-title">
-                    <i class="fa-solid fa-bezier-curve"></i>
-                    <span id="dendro-title">Agglomerative Tree Dendrogram</span>
+                    <i class="fa-solid fa-diagram-project"></i>
+                    <span id="dendro-title">Hierarchical Dendrogram</span>
                 </div>
                 <button class="zoom-btn" onclick="openLightbox('dendrogram-img', 'Hierarchical Cluster Dendrogram')">
-                    <i class="fa-solid fa-expand"></i> Inspect Dendrogram
+                    <i class="fa-solid fa-expand"></i> Expand View
                 </button>
             </div>
             <div class="image-container" onclick="openLightbox('dendrogram-img', 'Hierarchical Cluster Dendrogram')">

@@ -1,63 +1,56 @@
 {% extends "base.html" %}
 
-{% block title %}Price Valuation • Linear Regression • House Predictor{% endblock %}
+{% block title %}Price Estimator • House Predictor{% endblock %}
 
-{% block page_name %}Linear Regression{% endblock %}
+{% block page_name %}Price Estimator{% endblock %}
 
 {% block content %}
 <section id="regression">
     <div class="form-header">
-        <div class="header-folio">
-            <span class="folio-tag">SPECIFICATION 01</span>
-            <span class="folio-sep">&bull;</span>
-            <span>ORDINARY LEAST SQUARES</span>
+        <div class="header-badge">
+            <i class="fa-solid fa-calculator"></i>
+            <span>Linear Regression Price Predictor</span>
         </div>
         <div class="header-text">
-            <h2>Linear Regression Price Predictor</h2>
-            <p>Input structural square footage, layout, structural age, and municipal territory to compute a calibrated econometric price estimation.</p>
+            <h2>Estimate Property Market Value</h2>
+            <p>Enter property specifications to calculate an estimated fair market value based on 200,000 real estate transaction records.</p>
         </div>
     </div>
 
     <form id="reg-form">
         <div class="form-grid">
             
+            <!-- BHK Selector (Segmented control) -->
+            <div class="form-group full-width">
+                <div class="form-group-header">
+                    <label><i class="fa-solid fa-bed"></i> Bedrooms (BHK)</label>
+                    <span class="label-hint">Select room count</span>
+                </div>
+                <div class="segmented-control" data-for="reg-bhk">
+                    <button type="button" class="segment-btn" data-value="1" onclick="selectSegment('reg-bhk', 1, this)">1 BHK</button>
+                    <button type="button" class="segment-btn" data-value="2" onclick="selectSegment('reg-bhk', 2, this)">2 BHK</button>
+                    <button type="button" class="segment-btn active" data-value="3" onclick="selectSegment('reg-bhk', 3, this)">3 BHK</button>
+                    <button type="button" class="segment-btn" data-value="4" onclick="selectSegment('reg-bhk', 4, this)">4 BHK</button>
+                    <button type="button" class="segment-btn" data-value="5" onclick="selectSegment('reg-bhk', 5, this)">5+ BHK</button>
+                </div>
+                <input type="hidden" id="reg-bhk" name="bhk" value="3" min="1" max="20" required>
+            </div>
+
             <!-- Size Input -->
             <div class="form-group">
                 <div class="form-group-header">
-                    <label><i class="fa-solid fa-ruler-combined"></i> Carpet / Built-up Area</label>
-                    <span class="label-hint">100 - 20,000 SQ.FT</span>
+                    <label><i class="fa-solid fa-ruler-combined"></i> Property Area</label>
+                    <span class="label-hint">Carpet or built-up area</span>
                 </div>
-                <div class="input-group">
-                    <div class="input-icon"><i class="fa-solid fa-maximize"></i></div>
-                    <input type="number" id="reg-size" name="size" value="1800" min="100" max="20000" required>
-                    <div class="input-suffix">sq.ft</div>
+                <div class="natural-input-wrap">
+                    <input type="number" id="reg-size" name="size" class="natural-input" value="1800" min="100" max="20000" step="25" required placeholder="e.g. 1800">
+                    <span class="natural-unit">sq.ft</span>
                 </div>
-                <div class="chip-group">
-                    <button type="button" class="chip-btn" onclick="setPreset('reg-size', 850)">850 sq.ft</button>
-                    <button type="button" class="chip-btn" onclick="setPreset('reg-size', 1200)">1,200 sq.ft</button>
-                    <button type="button" class="chip-btn active" onclick="setPreset('reg-size', 1800)">1,800 sq.ft</button>
-                    <button type="button" class="chip-btn" onclick="setPreset('reg-size', 2500)">2,500 sq.ft</button>
-                    <button type="button" class="chip-btn" onclick="setPreset('reg-size', 4500)">4,500 sq.ft</button>
-                </div>
-            </div>
-
-            <!-- BHK Input -->
-            <div class="form-group">
-                <div class="form-group-header">
-                    <label><i class="fa-solid fa-door-open"></i> Bedroom Configuration</label>
-                    <span class="label-hint">1 - 20 BHK</span>
-                </div>
-                <div class="input-group">
-                    <div class="input-icon"><i class="fa-solid fa-bed"></i></div>
-                    <input type="number" id="reg-bhk" name="bhk" value="3" min="1" max="20" required>
-                    <div class="input-suffix">BHK</div>
-                </div>
-                <div class="chip-group">
-                    <button type="button" class="chip-btn" onclick="setPreset('reg-bhk', 1)">1 BHK</button>
-                    <button type="button" class="chip-btn" onclick="setPreset('reg-bhk', 2)">2 BHK</button>
-                    <button type="button" class="chip-btn active" onclick="setPreset('reg-bhk', 3)">3 BHK</button>
-                    <button type="button" class="chip-btn" onclick="setPreset('reg-bhk', 4)">4 BHK</button>
-                    <button type="button" class="chip-btn" onclick="setPreset('reg-bhk', 5)">5+ BHK</button>
+                <div class="quick-pills" data-for="reg-size">
+                    <button type="button" class="quick-pill-btn" data-value="850" onclick="setPreset('reg-size', 850)">850 sq.ft</button>
+                    <button type="button" class="quick-pill-btn" data-value="1200" onclick="setPreset('reg-size', 1200)">1,200 sq.ft</button>
+                    <button type="button" class="quick-pill-btn active" data-value="1800" onclick="setPreset('reg-size', 1800)">1,800 sq.ft</button>
+                    <button type="button" class="quick-pill-btn" data-value="2500" onclick="setPreset('reg-size', 2500)">2,500 sq.ft</button>
                 </div>
             </div>
 
@@ -65,79 +58,72 @@
             <div class="form-group">
                 <div class="form-group-header">
                     <label><i class="fa-regular fa-clock"></i> Property Age</label>
-                    <span class="label-hint">0 - 150 Years</span>
+                    <span class="label-hint">Age since construction</span>
                 </div>
-                <div class="input-group">
-                    <div class="input-icon"><i class="fa-regular fa-calendar"></i></div>
-                    <input type="number" id="reg-age" name="age" value="5" min="0" max="150" required>
-                    <div class="input-suffix">Years</div>
+                <div class="segmented-control" data-for="reg-age">
+                    <button type="button" class="segment-btn" data-value="0" onclick="selectSegment('reg-age', 0, this)">Brand New</button>
+                    <button type="button" class="segment-btn" data-value="3" onclick="selectSegment('reg-age', 3, this)">3 yrs</button>
+                    <button type="button" class="segment-btn active" data-value="5" onclick="selectSegment('reg-age', 5, this)">5 yrs</button>
+                    <button type="button" class="segment-btn" data-value="10" onclick="selectSegment('reg-age', 10, this)">10 yrs</button>
+                    <button type="button" class="segment-btn" data-value="20" onclick="selectSegment('reg-age', 20, this)">20+ yrs</button>
                 </div>
-                <div class="chip-group">
-                    <button type="button" class="chip-btn" onclick="setPreset('reg-age', 0)">Brand New</button>
-                    <button type="button" class="chip-btn" onclick="setPreset('reg-age', 3)">3 yrs</button>
-                    <button type="button" class="chip-btn active" onclick="setPreset('reg-age', 5)">5 yrs</button>
-                    <button type="button" class="chip-btn" onclick="setPreset('reg-age', 10)">10 yrs</button>
-                    <button type="button" class="chip-btn" onclick="setPreset('reg-age', 20)">20+ yrs</button>
-                </div>
+                <input type="hidden" id="reg-age" name="age" value="5" min="0" max="150" required>
             </div>
 
             <!-- City Input -->
-            <div class="form-group">
+            <div class="form-group full-width">
                 <div class="form-group-header">
-                    <label><i class="fa-solid fa-location-dot"></i> Municipal Territory</label>
-                    <span class="label-hint">42 Cities</span>
+                    <label><i class="fa-solid fa-location-dot"></i> City / Market</label>
+                    <span class="label-hint">42 Metropolitan Areas</span>
                 </div>
-                <div class="input-group">
-                    <div class="input-icon"><i class="fa-regular fa-building"></i></div>
-                    <div class="select-wrapper">
-                        <select id="reg-city" name="city" required>
-                            {% include "components/city_options.html" %}
-                        </select>
-                    </div>
+                <div class="select-wrapper">
+                    <select id="reg-city" name="city" required>
+                        {% include "components/city_options.html" %}
+                    </select>
                 </div>
-                <div class="chip-group">
-                    <button type="button" class="chip-btn active" onclick="setPreset('reg-city', 'Pune')">Pune</button>
-                    <button type="button" class="chip-btn" onclick="setPreset('reg-city', 'Mumbai')">Mumbai</button>
-                    <button type="button" class="chip-btn" onclick="setPreset('reg-city', 'Bangalore')">Bangalore</button>
-                    <button type="button" class="chip-btn" onclick="setPreset('reg-city', 'New Delhi')">Delhi</button>
-                    <button type="button" class="chip-btn" onclick="setPreset('reg-city', 'Hyderabad')">Hyderabad</button>
+                <div class="quick-pills" data-for="reg-city">
+                    <button type="button" class="quick-pill-btn active" data-value="Pune" onclick="setPreset('reg-city', 'Pune')">Pune</button>
+                    <button type="button" class="quick-pill-btn" data-value="Mumbai" onclick="setPreset('reg-city', 'Mumbai')">Mumbai</button>
+                    <button type="button" class="quick-pill-btn" data-value="Bangalore" onclick="setPreset('reg-city', 'Bangalore')">Bangalore</button>
+                    <button type="button" class="quick-pill-btn" data-value="New Delhi" onclick="setPreset('reg-city', 'New Delhi')">Delhi</button>
+                    <button type="button" class="quick-pill-btn" data-value="Hyderabad" onclick="setPreset('reg-city', 'Hyderabad')">Hyderabad</button>
                 </div>
             </div>
 
         </div>
 
-        <button type="submit" class="submit-btn" id="reg-submit-btn">
+        <button type="submit" class="natural-btn-primary" id="reg-submit-btn">
             <i class="fa-solid fa-spinner spinner"></i>
-            <span class="btn-text"><i class="fa-solid fa-calculator"></i> Compute Valuation</span>
-            <span class="loading-text">Computing OLS Model...</span>
+            <span class="btn-text">Estimate Market Price &rarr;</span>
+            <span class="loading-text">Estimating Market Value...</span>
         </button>
     </form>
 
     <!-- Regression Result Card -->
     <div id="reg-result" class="result-card appraisal-slip" style="display:none;">
         <div class="slip-header">
-            <div class="slip-tag">APPRAISAL REPORT</div>
-            <div class="slip-meta">METHOD: ORDINARY LEAST SQUARES</div>
+            <div class="slip-tag">Market Valuation Estimate</div>
+            <div class="slip-meta">Linear Regression Model</div>
         </div>
 
         <div class="hero-price-box">
-            <div class="price-label">ESTIMATED MARKET VALUATION</div>
+            <div class="price-label">Estimated Fair Market Value</div>
             <div class="price-value" id="reg-formatted-price">₹0.00</div>
-            <div class="price-sub" id="reg-pred-sub">Linear Regression Model • Pune</div>
+            <div class="price-sub" id="reg-pred-sub">Based on comparable sales • Pune</div>
         </div>
 
         <div class="result-details-grid">
             <div class="detail-card">
-                <div class="detail-label">Computed Rate</div>
+                <div class="detail-label">Calculated Rate</div>
                 <div class="detail-value" id="reg-rate-sqft">₹0 / sq.ft</div>
             </div>
             <div class="detail-card">
-                <div class="detail-label">Market Territory</div>
+                <div class="detail-label">Target Market</div>
                 <div class="detail-value" id="reg-loc-badge">Pune</div>
             </div>
             <div class="detail-card">
-                <div class="detail-label">Statistical Status</div>
-                <div class="detail-value text-pine"><i class="fa-solid fa-check"></i> Converged</div>
+                <div class="detail-label">Model Confidence</div>
+                <div class="detail-value text-pine"><i class="fa-solid fa-circle-check"></i> High Confidence</div>
             </div>
         </div>
     </div>

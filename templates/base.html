@@ -26,14 +26,14 @@
         {% block top_bar %}
         <div class="top-bar" id="top-bar">
             <div class="breadcrumbs">
-                <a href="{{ url_for('home') }}">INDEX</a>
+                <a href="{{ url_for('home') }}">Home</a>
                 <span class="breadcrumb-separator">/</span>
                 <span class="breadcrumb-active">{% block page_name %}Overview{% endblock %}</span>
             </div>
             <div class="top-badge-indicator">
                 <span class="indicator-dot"></span>
-                <span class="indicator-label">R-ENGINE 4.4</span>
-                <span class="indicator-status">ACTIVE</span>
+                <span class="indicator-label">Analytics Engine</span>
+                <span class="indicator-status">Active</span>
             </div>
         </div>
         {% endblock %}
@@ -43,7 +43,7 @@
         </div>
 
         <div class="footer-text" id="footer-text">
-            <span>House Predictor</span> — Empirical Valuation &amp; Real Estate Analytics Engine &bull; Port 5001
+            <span>House Predictor</span> — Intelligent Real Estate Valuation &amp; Market Analytics
         </div>
     </main>
 
@@ -52,32 +52,61 @@
 
     <!-- Global JavaScript Helpers -->
     <script>
-        // Preset Helper with exact argument matching
+        // Segmented Control Helper
+        function selectSegment(inputId, value, btnElement) {
+            const input = document.getElementById(inputId);
+            if (!input) return;
+            input.value = value;
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+            input.dispatchEvent(new Event('change', { bubbles: true }));
+
+            const container = btnElement.closest('.segmented-control');
+            if (container) {
+                container.querySelectorAll('.segment-btn').forEach(btn => btn.classList.remove('active'));
+                btnElement.classList.add('active');
+            }
+        }
+
+        // Preset Helper for quick pills and chips
         function setPreset(inputId, value) {
             const input = document.getElementById(inputId);
             if (!input) return;
             input.value = value;
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+            input.dispatchEvent(new Event('change', { bubbles: true }));
 
-            const group = input.closest('.form-group');
-            if (group) {
-                const targetValStr = String(value);
-                group.querySelectorAll('.chip-btn').forEach(btn => {
-                    const onclickAttr = btn.getAttribute('onclick') || '';
-                    const match = onclickAttr.match(/setPreset\s*\(\s*['"][^'"]+['"]\s*,\s*['"]?([^'")\s]+)['"]?\s*\)/);
-                    if (match && match[1] === targetValStr) {
-                        btn.classList.add('active');
-                    } else {
-                        btn.classList.remove('active');
-                    }
-                });
-            }
+            syncAllControls(input);
         }
 
-        // Synchronize active chips when user types or selects manually
-        function syncChips(target) {
+        // Synchronize active states across segmented buttons, quick pills, and chips
+        function syncAllControls(target) {
+            if (!target) return;
+            const currentVal = String(target.value).trim();
+            const id = target.id;
+
+            // Sync segmented controls
+            document.querySelectorAll(`.segmented-control[data-for="${id}"] .segment-btn`).forEach(btn => {
+                const val = btn.getAttribute('data-value');
+                if (val !== null && String(val) === currentVal) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            // Sync quick pills
+            document.querySelectorAll(`.quick-pills[data-for="${id}"] .quick-pill-btn`).forEach(btn => {
+                const val = btn.getAttribute('data-value');
+                if (val !== null && String(val) === currentVal) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            // Legacy chip groups
             const group = target.closest('.form-group');
             if (group) {
-                const currentVal = String(target.value).trim();
                 group.querySelectorAll('.chip-btn').forEach(btn => {
                     const onclickAttr = btn.getAttribute('onclick') || '';
                     const match = onclickAttr.match(/setPreset\s*\(\s*['"][^'"]+['"]\s*,\s*['"]?([^'")\s]+)['"]?\s*\)/);
@@ -91,14 +120,14 @@
         }
 
         document.addEventListener('input', function(e) {
-            if (e.target.matches('input[type="number"], input[type="text"], select')) {
-                syncChips(e.target);
+            if (e.target.matches('input[type="number"], input[type="text"], input[type="hidden"], select')) {
+                syncAllControls(e.target);
             }
         });
 
         document.addEventListener('change', function(e) {
-            if (e.target.matches('select, input[type="number"], input[type="text"]')) {
-                syncChips(e.target);
+            if (e.target.matches('select, input[type="number"], input[type="text"], input[type="hidden"]')) {
+                syncAllControls(e.target);
             }
         });
 

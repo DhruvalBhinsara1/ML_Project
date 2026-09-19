@@ -1,63 +1,56 @@
 {% extends "base.html" %}
 
-{% block title %}Segment Classification • Decision Tree & Random Forest • House Predictor{% endblock %}
+{% block title %}Property Tier • House Predictor{% endblock %}
 
-{% block page_name %}Classification{% endblock %}
+{% block page_name %}Property Tier{% endblock %}
 
 {% block content %}
 <section id="classification">
     <div class="form-header">
-        <div class="header-folio">
-            <span class="folio-tag">SPECIFICATION 02</span>
-            <span class="folio-sep">&bull;</span>
-            <span>RECURSIVE PARTITIONING &bull; RANDOM FOREST</span>
+        <div class="header-badge">
+            <i class="fa-solid fa-sitemap"></i>
+            <span>Segment Classification &bull; Decision Tree &amp; Random Forest</span>
         </div>
         <div class="header-text">
-            <h2>Market Tier Classification</h2>
-            <p>Categorize the real-estate asset into Budget, Mid-Range, or Premium market tiers using Gini-optimal decision trees and an ensemble of 100 decorrelated trees.</p>
+            <h2>Determine Property Price Segment</h2>
+            <p>Identify whether a home falls into the Budget, Mid-Range, or Premium tier using machine-learning classification models.</p>
         </div>
     </div>
 
     <form id="class-form">
         <div class="form-grid">
             
+            <!-- BHK Selector (Segmented control) -->
+            <div class="form-group full-width">
+                <div class="form-group-header">
+                    <label><i class="fa-solid fa-bed"></i> Bedrooms (BHK)</label>
+                    <span class="label-hint">Select room count</span>
+                </div>
+                <div class="segmented-control" data-for="cls-bhk">
+                    <button type="button" class="segment-btn" data-value="1" onclick="selectSegment('cls-bhk', 1, this)">1 BHK</button>
+                    <button type="button" class="segment-btn" data-value="2" onclick="selectSegment('cls-bhk', 2, this)">2 BHK</button>
+                    <button type="button" class="segment-btn active" data-value="3" onclick="selectSegment('cls-bhk', 3, this)">3 BHK</button>
+                    <button type="button" class="segment-btn" data-value="4" onclick="selectSegment('cls-bhk', 4, this)">4 BHK</button>
+                    <button type="button" class="segment-btn" data-value="5" onclick="selectSegment('cls-bhk', 5, this)">5+ BHK</button>
+                </div>
+                <input type="hidden" id="cls-bhk" name="bhk" value="3" min="1" max="20" required>
+            </div>
+
             <!-- Size Input -->
             <div class="form-group">
                 <div class="form-group-header">
-                    <label><i class="fa-solid fa-ruler-combined"></i> Carpet / Built-up Area</label>
-                    <span class="label-hint">100 - 20,000 SQ.FT</span>
+                    <label><i class="fa-solid fa-ruler-combined"></i> Property Area</label>
+                    <span class="label-hint">Carpet or built-up area</span>
                 </div>
-                <div class="input-group">
-                    <div class="input-icon"><i class="fa-solid fa-maximize"></i></div>
-                    <input type="number" id="cls-size" name="size" value="1800" min="100" max="20000" required>
-                    <div class="input-suffix">sq.ft</div>
+                <div class="natural-input-wrap">
+                    <input type="number" id="cls-size" name="size" class="natural-input" value="1800" min="100" max="20000" step="25" required placeholder="e.g. 1800">
+                    <span class="natural-unit">sq.ft</span>
                 </div>
-                <div class="chip-group">
-                    <button type="button" class="chip-btn" onclick="setPreset('cls-size', 850)">850 sq.ft</button>
-                    <button type="button" class="chip-btn" onclick="setPreset('cls-size', 1200)">1,200 sq.ft</button>
-                    <button type="button" class="chip-btn active" onclick="setPreset('cls-size', 1800)">1,800 sq.ft</button>
-                    <button type="button" class="chip-btn" onclick="setPreset('cls-size', 2500)">2,500 sq.ft</button>
-                    <button type="button" class="chip-btn" onclick="setPreset('cls-size', 4500)">4,500 sq.ft</button>
-                </div>
-            </div>
-
-            <!-- BHK Input -->
-            <div class="form-group">
-                <div class="form-group-header">
-                    <label><i class="fa-solid fa-door-open"></i> Bedroom Configuration</label>
-                    <span class="label-hint">1 - 20 BHK</span>
-                </div>
-                <div class="input-group">
-                    <div class="input-icon"><i class="fa-solid fa-bed"></i></div>
-                    <input type="number" id="cls-bhk" name="bhk" value="3" min="1" max="20" required>
-                    <div class="input-suffix">BHK</div>
-                </div>
-                <div class="chip-group">
-                    <button type="button" class="chip-btn" onclick="setPreset('cls-bhk', 1)">1 BHK</button>
-                    <button type="button" class="chip-btn" onclick="setPreset('cls-bhk', 2)">2 BHK</button>
-                    <button type="button" class="chip-btn active" onclick="setPreset('cls-bhk', 3)">3 BHK</button>
-                    <button type="button" class="chip-btn" onclick="setPreset('cls-bhk', 4)">4 BHK</button>
-                    <button type="button" class="chip-btn" onclick="setPreset('cls-bhk', 5)">5+ BHK</button>
+                <div class="quick-pills" data-for="cls-size">
+                    <button type="button" class="quick-pill-btn" data-value="850" onclick="setPreset('cls-size', 850)">850 sq.ft</button>
+                    <button type="button" class="quick-pill-btn" data-value="1200" onclick="setPreset('cls-size', 1200)">1,200 sq.ft</button>
+                    <button type="button" class="quick-pill-btn active" data-value="1800" onclick="setPreset('cls-size', 1800)">1,800 sq.ft</button>
+                    <button type="button" class="quick-pill-btn" data-value="2500" onclick="setPreset('cls-size', 2500)">2,500 sq.ft</button>
                 </div>
             </div>
 
@@ -65,50 +58,43 @@
             <div class="form-group">
                 <div class="form-group-header">
                     <label><i class="fa-regular fa-clock"></i> Property Age</label>
-                    <span class="label-hint">0 - 150 Years</span>
+                    <span class="label-hint">Age since construction</span>
                 </div>
-                <div class="input-group">
-                    <div class="input-icon"><i class="fa-regular fa-calendar"></i></div>
-                    <input type="number" id="cls-age" name="age" value="5" min="0" max="150" required>
-                    <div class="input-suffix">Years</div>
+                <div class="segmented-control" data-for="cls-age">
+                    <button type="button" class="segment-btn" data-value="0" onclick="selectSegment('cls-age', 0, this)">Brand New</button>
+                    <button type="button" class="segment-btn" data-value="3" onclick="selectSegment('cls-age', 3, this)">3 yrs</button>
+                    <button type="button" class="segment-btn active" data-value="5" onclick="selectSegment('cls-age', 5, this)">5 yrs</button>
+                    <button type="button" class="segment-btn" data-value="10" onclick="selectSegment('cls-age', 10, this)">10 yrs</button>
+                    <button type="button" class="segment-btn" data-value="20" onclick="selectSegment('cls-age', 20, this)">20+ yrs</button>
                 </div>
-                <div class="chip-group">
-                    <button type="button" class="chip-btn" onclick="setPreset('cls-age', 0)">Brand New</button>
-                    <button type="button" class="chip-btn" onclick="setPreset('cls-age', 3)">3 yrs</button>
-                    <button type="button" class="chip-btn active" onclick="setPreset('cls-age', 5)">5 yrs</button>
-                    <button type="button" class="chip-btn" onclick="setPreset('cls-age', 10)">10 yrs</button>
-                    <button type="button" class="chip-btn" onclick="setPreset('cls-age', 20)">20+ yrs</button>
-                </div>
+                <input type="hidden" id="cls-age" name="age" value="5" min="0" max="150" required>
             </div>
 
             <!-- City Input -->
-            <div class="form-group">
+            <div class="form-group full-width">
                 <div class="form-group-header">
-                    <label><i class="fa-solid fa-location-dot"></i> Municipal Territory</label>
-                    <span class="label-hint">42 Cities</span>
+                    <label><i class="fa-solid fa-location-dot"></i> City / Market</label>
+                    <span class="label-hint">42 Metropolitan Areas</span>
                 </div>
-                <div class="input-group">
-                    <div class="input-icon"><i class="fa-regular fa-building"></i></div>
-                    <div class="select-wrapper">
-                        <select id="cls-city" name="city" required>
-                            {% include "components/city_options.html" %}
-                        </select>
-                    </div>
+                <div class="select-wrapper">
+                    <select id="cls-city" name="city" required>
+                        {% include "components/city_options.html" %}
+                    </select>
                 </div>
-                <div class="chip-group">
-                    <button type="button" class="chip-btn active" onclick="setPreset('cls-city', 'Pune')">Pune</button>
-                    <button type="button" class="chip-btn" onclick="setPreset('cls-city', 'Mumbai')">Mumbai</button>
-                    <button type="button" class="chip-btn" onclick="setPreset('cls-city', 'Bangalore')">Bangalore</button>
-                    <button type="button" class="chip-btn" onclick="setPreset('cls-city', 'New Delhi')">Delhi</button>
-                    <button type="button" class="chip-btn" onclick="setPreset('cls-city', 'Hyderabad')">Hyderabad</button>
+                <div class="quick-pills" data-for="cls-city">
+                    <button type="button" class="quick-pill-btn active" data-value="Pune" onclick="setPreset('cls-city', 'Pune')">Pune</button>
+                    <button type="button" class="quick-pill-btn" data-value="Mumbai" onclick="setPreset('cls-city', 'Mumbai')">Mumbai</button>
+                    <button type="button" class="quick-pill-btn" data-value="Bangalore" onclick="setPreset('cls-city', 'Bangalore')">Bangalore</button>
+                    <button type="button" class="quick-pill-btn" data-value="New Delhi" onclick="setPreset('cls-city', 'New Delhi')">Delhi</button>
+                    <button type="button" class="quick-pill-btn" data-value="Hyderabad" onclick="setPreset('cls-city', 'Hyderabad')">Hyderabad</button>
                 </div>
             </div>
 
         </div>
 
-        <button type="submit" class="submit-btn" id="class-submit-btn">
+        <button type="submit" class="natural-btn-primary" id="class-submit-btn">
             <i class="fa-solid fa-spinner spinner"></i>
-            <span class="btn-text"><i class="fa-solid fa-sitemap"></i> Classify Property Tier</span>
+            <span class="btn-text">Check Property Tier &rarr;</span>
             <span class="loading-text">Evaluating Decision Trees &amp; Forest...</span>
         </button>
     </form>
@@ -116,13 +102,13 @@
     <!-- Classification Result Card -->
     <div id="class-result" class="result-card appraisal-slip" style="display:none;">
         <div class="slip-header">
-            <div class="slip-tag">CLASSIFICATION RESULT</div>
-            <div class="slip-meta">ENSEMBLE CONSENSUS</div>
+            <div class="slip-tag">Classification Summary</div>
+            <div class="slip-meta">Model Consensus</div>
         </div>
 
         <div class="class-badge-container">
             <div id="main-segment-badge" class="segment-badge mid-range">
-                <span class="segment-bracket-tag">ESTIMATED TIER:</span>
+                <span class="segment-bracket-tag">PREDICTED SEGMENT:</span>
                 <span id="segment-text">Mid-Range</span>
             </div>
         </div>
@@ -131,7 +117,7 @@
             <div class="model-card">
                 <div class="model-card-header">
                     <div class="model-name">Single Decision Tree</div>
-                    <span class="model-tag">CART / GINI</span>
+                    <span class="model-tag">CART</span>
                 </div>
                 <div class="model-pred" id="dt-pred-text">-</div>
             </div>
@@ -139,7 +125,7 @@
             <div class="model-card">
                 <div class="model-card-header">
                     <div class="model-name">Random Forest</div>
-                    <span class="model-tag">100 TREES (BAGGING)</span>
+                    <span class="model-tag">100 Trees</span>
                 </div>
                 <div class="model-pred" id="rf-pred-text">-</div>
             </div>
@@ -149,10 +135,10 @@
             <div class="image-preview-header">
                 <div class="image-preview-title">
                     <i class="fa-solid fa-sitemap"></i>
-                    <span>Decision Tree Dendrogram Structure</span>
+                    <span>Decision Tree Visualization</span>
                 </div>
                 <button class="zoom-btn" onclick="openLightbox('dt-img', 'Decision Tree Visualization')">
-                    <i class="fa-solid fa-expand"></i> Inspect Tree
+                    <i class="fa-solid fa-expand"></i> Expand View
                 </button>
             </div>
             <div class="image-container" onclick="openLightbox('dt-img', 'Decision Tree Visualization')">

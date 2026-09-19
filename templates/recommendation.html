@@ -1,23 +1,22 @@
 {% extends "base.html" %}
 
-{% block title %}KNN Property Recommendation • House Predictor{% endblock %}
+{% block title %}Property Matcher • House Predictor{% endblock %}
 
-{% block page_name %}Property Recommendation{% endblock %}
+{% block page_name %}Property Matcher{% endblock %}
 
 {% block content %}
 <section id="recommendation">
 
     <!-- Page Header -->
     <div class="form-header">
-        <div class="header-folio">
-            <span class="folio-tag">SPECIFICATION 04</span>
-            <span class="folio-sep">&bull;</span>
-            <span>K-NEAREST NEIGHBORS RETRIEVAL</span>
+        <div class="header-badge">
+            <i class="fa-solid fa-compass"></i>
+            <span>KNN Property Recommendation &bull; Comparable Finder</span>
         </div>
         <div class="header-text">
-            <h2>KNN Property Recommendation</h2>
+            <h2>Find Matching Properties</h2>
             <p>
-                Query the 200,000-unit property catalog using standardized Euclidean distance to retrieve direct market comparables and calculate segment tier probabilities.
+                Search our 200,000-property database for real homes that closely match your target specifications, floor level, and neighborhood.
             </p>
         </div>
     </div>
@@ -25,712 +24,259 @@
     <!-- Recommendation Form -->
     <form id="recommendation-form">
 
-        <div class="form-grid">
-
-            <!-- BHK -->
-            <div class="form-group">
-                <div class="form-group-header">
-                    <label>
-                        <i class="fa-solid fa-bed"></i>
-                        Bedrooms (BHK)
-                    </label>
-                    <span class="label-hint">1 - 20 BHK</span>
-                </div>
-
-                <div class="input-group">
-                    <div class="input-icon">
-                        <i class="fa-solid fa-door-open"></i>
-                    </div>
-
-                    <input
-                        type="number"
-                        id="knn-bhk"
-                        name="bhk"
-                        value="3"
-                        min="1"
-                        max="20"
-                        required
-                    >
-
-                    <div class="input-suffix">BHK</div>
-                </div>
-
-                <div class="chip-group">
-                    <button type="button"
-                            class="chip-btn"
-                            onclick="setPreset('knn-bhk', 1)">
-                        1 BHK
-                    </button>
-
-                    <button type="button"
-                            class="chip-btn"
-                            onclick="setPreset('knn-bhk', 2)">
-                        2 BHK
-                    </button>
-
-                    <button type="button"
-                            class="chip-btn active"
-                            onclick="setPreset('knn-bhk', 3)">
-                        3 BHK
-                    </button>
-
-                    <button type="button"
-                            class="chip-btn"
-                            onclick="setPreset('knn-bhk', 4)">
-                        4 BHK
-                    </button>
-
-                    <button type="button"
-                            class="chip-btn"
-                            onclick="setPreset('knn-bhk', 5)">
-                        5+ BHK
-                    </button>
-                </div>
+        <!-- Section 1: Basic Property Details -->
+        <div class="form-section">
+            <div class="section-heading">
+                <span class="section-step">1</span>
+                <h3>Property Basics</h3>
             </div>
 
-
-            <!-- Property Size -->
-            <div class="form-group">
-                <div class="form-group-header">
-                    <label>
-                        <i class="fa-solid fa-maximize"></i>
-                        Property Size
-                    </label>
-                    <span class="label-hint">100 - 20,000 sq.ft</span>
-                </div>
-
-                <div class="input-group">
-                    <div class="input-icon">
-                        <i class="fa-solid fa-ruler-combined"></i>
+            <div class="form-grid">
+                <!-- Target City Filter -->
+                <div class="form-group full-width">
+                    <div class="form-group-header">
+                        <label><i class="fa-solid fa-location-dot"></i> City / Market</label>
+                        <span class="label-hint">Filter by city or search nationwide</span>
                     </div>
-
-                    <input
-                        type="number"
-                        id="knn-size"
-                        name="size"
-                        value="1800"
-                        min="100"
-                        max="20000"
-                        required
-                    >
-
-                    <div class="input-suffix">sq.ft</div>
-                </div>
-
-                <div class="chip-group">
-                    <button type="button"
-                            class="chip-btn"
-                            onclick="setPreset('knn-size', 850)">
-                        850 sq.ft
-                    </button>
-
-                    <button type="button"
-                            class="chip-btn"
-                            onclick="setPreset('knn-size', 1200)">
-                        1,200 sq.ft
-                    </button>
-
-                    <button type="button"
-                            class="chip-btn active"
-                            onclick="setPreset('knn-size', 1800)">
-                        1,800 sq.ft
-                    </button>
-
-                    <button type="button"
-                            class="chip-btn"
-                            onclick="setPreset('knn-size', 2500)">
-                        2,500 sq.ft
-                    </button>
-
-                    <button type="button"
-                            class="chip-btn"
-                            onclick="setPreset('knn-size', 4500)">
-                        4,500 sq.ft
-                    </button>
-                </div>
-            </div>
-
-
-            <!-- Year Built -->
-            <div class="form-group">
-                <div class="form-group-header">
-                    <label>
-                        <i class="fa-regular fa-calendar"></i>
-                        Year Built
-                    </label>
-                    <span class="label-hint">Property construction year</span>
-                </div>
-
-                <div class="input-group">
-                    <div class="input-icon">
-                        <i class="fa-solid fa-calendar-days"></i>
-                    </div>
-
-                    <input
-                        type="number"
-                        id="knn-year"
-                        name="year_built"
-                        value="2020"
-                        min="1900"
-                        max="2100"
-                        required
-                    >
-                </div>
-
-                <div class="chip-group">
-                    <button type="button"
-                            class="chip-btn"
-                            onclick="setPreset('knn-year', 2025)">
-                        2025
-                    </button>
-
-                    <button type="button"
-                            class="chip-btn"
-                            onclick="setPreset('knn-year', 2023)">
-                        2023
-                    </button>
-
-                    <button type="button"
-                            class="chip-btn active"
-                            onclick="setPreset('knn-year', 2020)">
-                        2020
-                    </button>
-
-                    <button type="button"
-                            class="chip-btn"
-                            onclick="setPreset('knn-year', 2015)">
-                        2015
-                    </button>
-                </div>
-            </div>
-
-
-            <!-- Floor Number -->
-            <div class="form-group">
-                <div class="form-group-header">
-                    <label>
-                        <i class="fa-solid fa-building"></i>
-                        Floor Number
-                    </label>
-                    <span class="label-hint">Current property floor</span>
-                </div>
-
-                <div class="input-group">
-                    <div class="input-icon">
-                        <i class="fa-solid fa-stairs"></i>
-                    </div>
-
-                    <input
-                        type="number"
-                        id="knn-floor"
-                        name="floor_no"
-                        value="3"
-                        min="0"
-                        max="100"
-                        required
-                    >
-
-                    <div class="input-suffix">Floor</div>
-                </div>
-
-                <div class="chip-group">
-                    <button type="button"
-                            class="chip-btn"
-                            onclick="setPreset('knn-floor', 0)">
-                        Ground
-                    </button>
-
-                    <button type="button"
-                            class="chip-btn"
-                            onclick="setPreset('knn-floor', 2)">
-                        2nd
-                    </button>
-
-                    <button type="button"
-                            class="chip-btn active"
-                            onclick="setPreset('knn-floor', 3)">
-                        3rd
-                    </button>
-
-                    <button type="button"
-                            class="chip-btn"
-                            onclick="setPreset('knn-floor', 5)">
-                        5th
-                    </button>
-
-                    <button type="button"
-                            class="chip-btn"
-                            onclick="setPreset('knn-floor', 10)">
-                        10th
-                    </button>
-                </div>
-            </div>
-
-
-            <!-- Total Floors -->
-            <div class="form-group">
-                <div class="form-group-header">
-                    <label>
-                        <i class="fa-solid fa-layer-group"></i>
-                        Total Floors
-                    </label>
-                    <span class="label-hint">Building height</span>
-                </div>
-
-                <div class="input-group">
-                    <div class="input-icon">
-                        <i class="fa-solid fa-building-columns"></i>
-                    </div>
-
-                    <input
-                        type="number"
-                        id="knn-total-floors"
-                        name="total_floors"
-                        value="10"
-                        min="1"
-                        max="150"
-                        required
-                    >
-
-                    <div class="input-suffix">Floors</div>
-                </div>
-
-                <div class="chip-group">
-                    <button type="button"
-                            class="chip-btn"
-                            onclick="setPreset('knn-total-floors', 5)">
-                        5
-                    </button>
-
-                    <button type="button"
-                            class="chip-btn active"
-                            onclick="setPreset('knn-total-floors', 10)">
-                        10
-                    </button>
-
-                    <button type="button"
-                            class="chip-btn"
-                            onclick="setPreset('knn-total-floors', 15)">
-                        15
-                    </button>
-
-                    <button type="button"
-                            class="chip-btn"
-                            onclick="setPreset('knn-total-floors', 20)">
-                        20
-                    </button>
-                </div>
-            </div>
-
-
-            <!-- Property Age -->
-            <div class="form-group">
-                <div class="form-group-header">
-                    <label>
-                        <i class="fa-regular fa-clock"></i>
-                        Property Age
-                    </label>
-                    <span class="label-hint">Age in years</span>
-                </div>
-
-                <div class="input-group">
-                    <div class="input-icon">
-                        <i class="fa-solid fa-hourglass-half"></i>
-                    </div>
-
-                    <input
-                        type="number"
-                        id="knn-age"
-                        name="age"
-                        value="5"
-                        min="0"
-                        max="150"
-                        required
-                    >
-
-                    <div class="input-suffix">Years</div>
-                </div>
-
-                <div class="chip-group">
-                    <button type="button"
-                            class="chip-btn"
-                            onclick="setPreset('knn-age', 0)">
-                        New
-                    </button>
-
-                    <button type="button"
-                            class="chip-btn"
-                            onclick="setPreset('knn-age', 3)">
-                        3 yrs
-                    </button>
-
-                    <button type="button"
-                            class="chip-btn active"
-                            onclick="setPreset('knn-age', 5)">
-                        5 yrs
-                    </button>
-
-                    <button type="button"
-                            class="chip-btn"
-                            onclick="setPreset('knn-age', 10)">
-                        10 yrs
-                    </button>
-
-                    <button type="button"
-                            class="chip-btn"
-                            onclick="setPreset('knn-age', 20)">
-                        20+ yrs
-                    </button>
-                </div>
-            </div>
-
-
-            <!-- Nearby Schools -->
-            <div class="form-group">
-                <div class="form-group-header">
-                    <label>
-                        <i class="fa-solid fa-school"></i>
-                        Nearby Schools
-                    </label>
-                    <span class="label-hint">Number of schools</span>
-                </div>
-
-                <div class="input-group">
-                    <div class="input-icon">
-                        <i class="fa-solid fa-school"></i>
-                    </div>
-
-                    <input
-                        type="number"
-                        id="knn-schools"
-                        name="nearby_schools"
-                        value="5"
-                        min="0"
-                        max="100"
-                        required
-                    >
-
-                    <div class="input-suffix">Schools</div>
-                </div>
-
-                <div class="chip-group">
-                    <button type="button"
-                            class="chip-btn"
-                            onclick="setPreset('knn-schools', 1)">
-                        1
-                    </button>
-
-                    <button type="button"
-                            class="chip-btn"
-                            onclick="setPreset('knn-schools', 3)">
-                        3
-                    </button>
-
-                    <button type="button"
-                            class="chip-btn active"
-                            onclick="setPreset('knn-schools', 5)">
-                        5
-                    </button>
-
-                    <button type="button"
-                            class="chip-btn"
-                            onclick="setPreset('knn-schools', 10)">
-                        10
-                    </button>
-                </div>
-            </div>
-
-
-            <!-- Nearby Hospitals -->
-            <div class="form-group">
-                <div class="form-group-header">
-                    <label>
-                        <i class="fa-solid fa-hospital"></i>
-                        Nearby Hospitals
-                    </label>
-                    <span class="label-hint">Number of hospitals</span>
-                </div>
-
-                <div class="input-group">
-                    <div class="input-icon">
-                        <i class="fa-solid fa-hospital"></i>
-                    </div>
-
-                    <input
-                        type="number"
-                        id="knn-hospitals"
-                        name="nearby_hospitals"
-                        value="3"
-                        min="0"
-                        max="100"
-                        required
-                    >
-
-                    <div class="input-suffix">Hospitals</div>
-                </div>
-
-                <div class="chip-group">
-                    <button type="button"
-                            class="chip-btn"
-                            onclick="setPreset('knn-hospitals', 1)">
-                        1
-                    </button>
-
-                    <button type="button"
-                            class="chip-btn active"
-                            onclick="setPreset('knn-hospitals', 3)">
-                        3
-                    </button>
-
-                    <button type="button"
-                            class="chip-btn"
-                            onclick="setPreset('knn-hospitals', 5)">
-                        5
-                    </button>
-
-                    <button type="button"
-                            class="chip-btn"
-                            onclick="setPreset('knn-hospitals', 10)">
-                        10
-                    </button>
-                </div>
-            </div>
-
-
-            <!-- Target City Filter -->
-            <div class="form-group full-width">
-                <div class="form-group-header">
-                    <label>
-                        <i class="fa-regular fa-building"></i>
-                        Target City / Market
-                    </label>
-                    <span class="label-hint">Filter by city or search nationwide</span>
-                </div>
-
-                <div class="input-group">
-                    <div class="input-icon">
-                        <i class="fa-solid fa-location-dot"></i>
-                    </div>
-
                     <div class="select-wrapper">
                         <select id="knn-city" name="city">
                             <option value="All" selected>All Cities (Nationwide Search)</option>
                             {% include "components/city_options.html" %}
                         </select>
                     </div>
+                    <div class="quick-pills" data-for="knn-city">
+                        <button type="button" class="quick-pill-btn active" data-value="All" onclick="setPreset('knn-city', 'All')">All India</button>
+                        <button type="button" class="quick-pill-btn" data-value="Pune" onclick="setPreset('knn-city', 'Pune')">Pune</button>
+                        <button type="button" class="quick-pill-btn" data-value="Mumbai" onclick="setPreset('knn-city', 'Mumbai')">Mumbai</button>
+                        <button type="button" class="quick-pill-btn" data-value="Bangalore" onclick="setPreset('knn-city', 'Bangalore')">Bangalore</button>
+                        <button type="button" class="quick-pill-btn" data-value="New Delhi" onclick="setPreset('knn-city', 'New Delhi')">Delhi</button>
+                        <button type="button" class="quick-pill-btn" data-value="Hyderabad" onclick="setPreset('knn-city', 'Hyderabad')">Hyderabad</button>
+                    </div>
                 </div>
 
-                <div class="chip-group">
-                    <button type="button" class="chip-btn active" onclick="setPreset('knn-city', 'All')">All India</button>
-                    <button type="button" class="chip-btn" onclick="setPreset('knn-city', 'Pune')">Pune</button>
-                    <button type="button" class="chip-btn" onclick="setPreset('knn-city', 'Mumbai')">Mumbai</button>
-                    <button type="button" class="chip-btn" onclick="setPreset('knn-city', 'Bangalore')">Bangalore</button>
-                    <button type="button" class="chip-btn" onclick="setPreset('knn-city', 'New Delhi')">Delhi</button>
-                    <button type="button" class="chip-btn" onclick="setPreset('knn-city', 'Hyderabad')">Hyderabad</button>
+                <!-- Bedrooms (BHK) -->
+                <div class="form-group full-width">
+                    <div class="form-group-header">
+                        <label><i class="fa-solid fa-bed"></i> Bedrooms (BHK)</label>
+                        <span class="label-hint">Select room configuration</span>
+                    </div>
+                    <div class="segmented-control" data-for="knn-bhk">
+                        <button type="button" class="segment-btn" data-value="1" onclick="selectSegment('knn-bhk', 1, this)">1 BHK</button>
+                        <button type="button" class="segment-btn" data-value="2" onclick="selectSegment('knn-bhk', 2, this)">2 BHK</button>
+                        <button type="button" class="segment-btn active" data-value="3" onclick="selectSegment('knn-bhk', 3, this)">3 BHK</button>
+                        <button type="button" class="segment-btn" data-value="4" onclick="selectSegment('knn-bhk', 4, this)">4 BHK</button>
+                        <button type="button" class="segment-btn" data-value="5" onclick="selectSegment('knn-bhk', 5, this)">5+ BHK</button>
+                    </div>
+                    <input type="hidden" id="knn-bhk" name="bhk" value="3" min="1" max="20" required>
+                </div>
+
+                <!-- Property Size -->
+                <div class="form-group full-width">
+                    <div class="form-group-header">
+                        <label><i class="fa-solid fa-ruler-combined"></i> Property Area</label>
+                        <span class="label-hint">Carpet or built-up area</span>
+                    </div>
+                    <div class="natural-input-wrap">
+                        <input type="number" id="knn-size" name="size" class="natural-input" value="1800" min="100" max="20000" step="25" required placeholder="e.g. 1800">
+                        <span class="natural-unit">sq.ft</span>
+                    </div>
+                    <div class="quick-pills" data-for="knn-size">
+                        <button type="button" class="quick-pill-btn" data-value="850" onclick="setPreset('knn-size', 850)">850 sq.ft</button>
+                        <button type="button" class="quick-pill-btn" data-value="1200" onclick="setPreset('knn-size', 1200)">1,200 sq.ft</button>
+                        <button type="button" class="quick-pill-btn active" data-value="1800" onclick="setPreset('knn-size', 1800)">1,800 sq.ft</button>
+                        <button type="button" class="quick-pill-btn" data-value="2500" onclick="setPreset('knn-size', 2500)">2,500 sq.ft</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Building & Floor Details -->
+        <div class="form-section">
+            <div class="section-heading">
+                <span class="section-step">2</span>
+                <h3>Building &amp; Vintage</h3>
+            </div>
+
+            <div class="field-pair">
+                <div class="form-group">
+                    <div class="form-group-header">
+                        <label><i class="fa-solid fa-stairs"></i> Property Floor</label>
+                    </div>
+                    <div class="natural-input-wrap">
+                        <input type="number" id="knn-floor" name="floor_no" class="natural-input" value="3" min="0" max="100" required>
+                        <span class="natural-unit">Floor</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-group-header">
+                        <label><i class="fa-solid fa-building"></i> Total Floors in Building</label>
+                    </div>
+                    <div class="natural-input-wrap">
+                        <input type="number" id="knn-total-floors" name="total_floors" class="natural-input" value="10" min="1" max="150" required>
+                        <span class="natural-unit">Floors</span>
+                    </div>
                 </div>
             </div>
 
+            <div class="form-group full-width" style="margin-top: 1rem;">
+                <div class="form-group-header">
+                    <label><i class="fa-regular fa-clock"></i> Property Age</label>
+                    <span class="label-hint">Vintage</span>
+                </div>
+                <div class="segmented-control" data-for="knn-age">
+                    <button type="button" class="segment-btn" data-value="0" onclick="selectSegment('knn-age', 0, this); updateYearBuilt(0);">Brand New</button>
+                    <button type="button" class="segment-btn" data-value="3" onclick="selectSegment('knn-age', 3, this); updateYearBuilt(3);">3 yrs</button>
+                    <button type="button" class="segment-btn active" data-value="5" onclick="selectSegment('knn-age', 5, this); updateYearBuilt(5);">5 yrs</button>
+                    <button type="button" class="segment-btn" data-value="10" onclick="selectSegment('knn-age', 10, this); updateYearBuilt(10);">10 yrs</button>
+                    <button type="button" class="segment-btn" data-value="20" onclick="selectSegment('knn-age', 20, this); updateYearBuilt(20);">20+ yrs</button>
+                </div>
+                <input type="hidden" id="knn-age" name="age" value="5" min="0" max="150" required>
+                <input type="hidden" id="knn-year" name="year_built" value="2020">
+            </div>
         </div>
 
+        <!-- Section 3: Neighborhood & Transit -->
+        <div class="form-section">
+            <div class="section-heading">
+                <span class="section-step">3</span>
+                <h3>Neighborhood &amp; Transit</h3>
+            </div>
+
+            <div class="field-pair">
+                <div class="form-group">
+                    <div class="form-group-header">
+                        <label><i class="fa-solid fa-graduation-cap"></i> Nearby Schools</label>
+                    </div>
+                    <div class="natural-input-wrap">
+                        <input type="number" id="knn-schools" name="nearby_schools" class="natural-input" value="5" min="0" max="50" required>
+                        <span class="natural-unit">Schools</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-group-header">
+                        <label><i class="fa-solid fa-heart-pulse"></i> Nearby Hospitals</label>
+                    </div>
+                    <div class="natural-input-wrap">
+                        <input type="number" id="knn-hospitals" name="nearby_hospitals" class="natural-input" value="3" min="0" max="50" required>
+                        <span class="natural-unit">Hospitals</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group full-width" style="margin-top: 1rem;">
+                <div class="form-group-header">
+                    <label><i class="fa-solid fa-bus"></i> Public Transit Access</label>
+                    <span class="label-hint">Connectivity</span>
+                </div>
+                <div class="segmented-control" data-for="knn-transport">
+                    <button type="button" class="segment-btn" data-value="Low" onclick="selectSegment('knn-transport', 'Low', this)">Low Access</button>
+                    <button type="button" class="segment-btn" data-value="Moderate" onclick="selectSegment('knn-transport', 'Moderate', this)">Moderate Access</button>
+                    <button type="button" class="segment-btn active" data-value="High" onclick="selectSegment('knn-transport', 'High', this)">High Access</button>
+                </div>
+                <input type="hidden" id="knn-transport" name="transport" value="High">
+            </div>
+        </div>
 
         <!-- Submit Button -->
-        <button
-            type="submit"
-            class="submit-btn"
-            id="knn-submit-btn"
-        >
+        <button type="submit" class="natural-btn-primary" id="knn-submit-btn">
             <i class="fa-solid fa-spinner spinner"></i>
-
-            <span class="btn-text">
-                <i class="fa-solid fa-crosshairs"></i>
-                Retrieve Matching Comparables
-            </span>
-
-            <span class="loading-text">
-                Querying Nearest Neighbors (200k Index)...
-            </span>
+            <span class="btn-text">Find Matching Properties &rarr;</span>
+            <span class="loading-text">Searching 200,000 Catalog Records...</span>
         </button>
 
     </form>
 
-
     <!-- KNN Result -->
-    <div
-        id="knn-result"
-        class="result-card appraisal-slip"
-        style="display:none;"
-    >
+    <div id="knn-result" class="result-card appraisal-slip" style="display:none;">
         <div class="slip-header">
-            <div class="slip-tag">RETRIEVAL REPORT</div>
-            <div class="slip-meta">ALGORITHM: K-NEAREST NEIGHBORS (EUCLIDEAN)</div>
+            <div class="slip-tag">Property Match Results</div>
+            <div class="slip-meta">K-Nearest Neighbors Algorithm</div>
         </div>
 
         <!-- Main Prediction -->
         <div class="class-badge-container">
-
-            <div
-                id="knn-main-badge"
-                class="segment-badge mid-range"
-            >
-                <span class="segment-bracket-tag">PREDICTED CATEGORY:</span>
-                <span id="knn-category">
-                    Mid-Range
-                </span>
+            <div id="knn-main-badge" class="segment-badge mid-range">
+                <span class="segment-bracket-tag">PREDICTED TIER:</span>
+                <span id="knn-category">Mid-Range</span>
             </div>
-
         </div>
-
 
         <!-- Probability Cards -->
         <div class="models-comparison-grid three-cards">
-
             <div class="model-card tier-card" id="card-budget">
-
                 <div class="model-card-header">
                     <div class="model-name">
-                        <i
-                            class="fa-solid fa-wallet"
-                            style="color: var(--emerald-600);"
-                        ></i>
+                        <i class="fa-solid fa-wallet" style="color: var(--emerald-600);"></i>
                         Budget Tier
                     </div>
-
-                    <span class="model-tag">
-                        Probability
-                    </span>
+                    <span class="model-tag">Probability</span>
                 </div>
-
-                <div
-                    class="model-pred"
-                    id="knn-budget-prob"
-                >
-                    -
-                </div>
-
+                <div class="model-pred" id="knn-budget-prob">-</div>
                 <div class="prob-progress-bar">
                     <div class="prob-progress-fill budget-fill" id="knn-budget-fill" style="width: 0%;"></div>
                 </div>
-
             </div>
 
-
             <div class="model-card tier-card" id="card-mid">
-
                 <div class="model-card-header">
                     <div class="model-name">
-                        <i
-                            class="fa-solid fa-chart-line"
-                            style="color: var(--indigo-600);"
-                        ></i>
+                        <i class="fa-solid fa-chart-line" style="color: var(--indigo-600);"></i>
                         Mid-Range Tier
                     </div>
-
-                    <span class="model-tag">
-                        Probability
-                    </span>
+                    <span class="model-tag">Probability</span>
                 </div>
-
-                <div
-                    class="model-pred"
-                    id="knn-mid-prob"
-                >
-                    -
-                </div>
-
+                <div class="model-pred" id="knn-mid-prob">-</div>
                 <div class="prob-progress-bar">
                     <div class="prob-progress-fill mid-fill" id="knn-mid-fill" style="width: 0%;"></div>
                 </div>
-
             </div>
 
-
             <div class="model-card tier-card" id="card-premium">
-
                 <div class="model-card-header">
                     <div class="model-name">
-                        <i
-                            class="fa-solid fa-crown"
-                            style="color: var(--purple-600);"
-                        ></i>
+                        <i class="fa-solid fa-crown" style="color: var(--purple-600);"></i>
                         Premium Tier
                     </div>
-
-                    <span class="model-tag">
-                        Probability
-                    </span>
+                    <span class="model-tag">Probability</span>
                 </div>
-
-                <div
-                    class="model-pred"
-                    id="knn-premium-prob"
-                >
-                    -
-                </div>
-
+                <div class="model-pred" id="knn-premium-prob">-</div>
                 <div class="prob-progress-bar">
                     <div class="prob-progress-fill premium-fill" id="knn-premium-fill" style="width: 0%;"></div>
                 </div>
-
             </div>
-
         </div>
-
 
         <!-- Model Information -->
         <div class="result-details-grid">
-
             <div class="detail-card">
-                <div class="detail-label">
-                    Model
-                </div>
-
-                <div class="detail-value">
-                    K-Nearest Neighbors
+                <div class="detail-label">Model</div>
+                <div class="detail-value">K-Nearest Neighbors</div>
+            </div>
+            <div class="detail-card">
+                <div class="detail-label">Tuned Parameter</div>
+                <div class="detail-value" id="knn-best-k">K = 11</div>
+            </div>
+            <div class="detail-card">
+                <div class="detail-label">Search Status</div>
+                <div class="detail-value" style="color: var(--emerald-600);">
+                    <i class="fa-solid fa-circle-check"></i> Complete
                 </div>
             </div>
-
-
-            <div class="detail-card">
-                <div class="detail-label">
-                    Best K
-                </div>
-
-                <div
-                    class="detail-value"
-                    id="knn-best-k"
-                >
-                    -
-                </div>
-            </div>
-
-
-            <div class="detail-card">
-                <div class="detail-label">
-                    Status
-                </div>
-
-                <div
-                    class="detail-value"
-                    style="color: var(--emerald-600);"
-                >
-                    <i class="fa-solid fa-circle-check"></i>
-                    Completed
-                </div>
-            </div>
-
         </div>
 
         <!-- Recommended Real Properties Showcase -->
         <div class="properties-showcase-section" id="properties-showcase" style="display:none;">
             <div class="showcase-header">
                 <div>
-                    <div class="slip-tag">CATALOG RETRIEVAL</div>
+                    <div class="slip-tag">Direct Market Comparables</div>
                     <h3 class="showcase-title">
-                        <i class="fa-solid fa-layer-group"></i>
-                        Direct Comparable Properties
+                        <i class="fa-solid fa-house-chimney"></i>
+                        Matching Properties in Catalog
                     </h3>
                     <p class="showcase-subtitle">
-                        Individual property records retrieved from the 200,000-unit empirical catalog exhibiting minimal multi-dimensional distance.
+                        Verified property units exhibiting the highest similarity across location, layout, size, and neighborhood amenities.
                     </p>
                 </div>
                 <div class="showcase-counter" id="showcase-counter">
@@ -748,14 +294,14 @@
             <div class="image-preview-header">
                 <div class="image-preview-title">
                     <i class="fa-solid fa-chart-line"></i>
-                    <span>Hyperparameter Tuning Curve (K vs Empirical Accuracy)</span>
+                    <span>KNN Hyperparameter Optimization Curve</span>
                 </div>
-                <button type="button" class="zoom-btn" onclick="openLightbox('knn-img', 'KNN Accuracy vs K Optimization')">
-                    <i class="fa-solid fa-expand"></i> Inspect Curve
+                <button type="button" class="zoom-btn" onclick="openLightbox('knn-img', 'KNN Hyperparameter Curve')">
+                    <i class="fa-solid fa-expand"></i> Expand View
                 </button>
             </div>
-            <div class="image-container" onclick="openLightbox('knn-img', 'KNN Accuracy vs K Optimization')">
-                <img id="knn-img" src="" alt="KNN Accuracy vs K Optimization">
+            <div class="image-container" onclick="openLightbox('knn-img', 'KNN Hyperparameter Curve')">
+                <img id="knn-img" src="" alt="KNN Hyperparameter Curve">
             </div>
         </div>
 
@@ -764,17 +310,22 @@
 </section>
 {% endblock %}
 
-
 {% block scripts %}
-
 <script>
+    function updateYearBuilt(age) {
+        const currentYear = new Date().getFullYear();
+        const yearInput = document.getElementById('knn-year');
+        if (yearInput) {
+            yearInput.value = currentYear - parseInt(age, 10);
+        }
+    }
+
     document.getElementById('recommendation-form').onsubmit = async function(e) {
         e.preventDefault();
 
         const btn = document.getElementById('knn-submit-btn');
         const resultCard = document.getElementById('knn-result');
         const mainBadge = document.getElementById('knn-main-badge');
-        const categorySpan = document.getElementById('knn-category');
         const budgetProb = document.getElementById('knn-budget-prob');
         const midProb = document.getElementById('knn-mid-prob');
         const premiumProb = document.getElementById('knn-premium-prob');
@@ -811,7 +362,6 @@
             const primaryTier = data.category || "Mid-Range";
             mainBadge.className = 'segment-badge';
 
-            // Reset tier highlights
             cardBudget.classList.remove('highlight-budget');
             cardMid.classList.remove('highlight-mid');
             cardPremium.classList.remove('highlight-premium');
@@ -849,70 +399,59 @@
             if (data.properties && data.properties.length > 0) {
                 propertiesGrid.innerHTML = '';
                 const cityLabel = (data.city && data.city !== 'All') ? `in ${data.city}` : 'Nationwide';
-                showcaseCounter.innerHTML = `<span class="counter-badge"><i class="fa-solid fa-list-check"></i> ${data.properties.length} Matches (${cityLabel})</span>`;
+                showcaseCounter.innerHTML = `<span class="counter-badge"><i class="fa-solid fa-check"></i> ${data.properties.length} Matching Homes (${cityLabel})</span>`;
 
                 data.properties.forEach(prop => {
                     const card = document.createElement('div');
                     card.className = 'property-card';
 
-                    // Determine property type icon
-                    let typeIcon = 'fa-building';
-                    const propTypeLower = (prop.property_type || '').toLowerCase();
-                    if (propTypeLower.includes('villa')) {
-                        typeIcon = 'fa-house-chimney-window';
-                    } else if (propTypeLower.includes('independent') || propTypeLower.includes('house')) {
-                        typeIcon = 'fa-house';
-                    }
-
-                    // Tier class
                     let tierClass = 'mid-range';
                     const tierLower = (prop.price_category || '').toLowerCase();
                     if (tierLower.includes('budget')) tierClass = 'budget';
                     else if (tierLower.includes('premium')) tierClass = 'premium';
 
-                    // Amenities chips
                     let amenitiesHtml = '';
                     if (prop.amenities) {
                         const tags = prop.amenities.split(',').map(s => s.trim()).filter(Boolean);
                         amenitiesHtml = tags.slice(0, 4).map(tag => `<span class="amenity-chip">${tag}</span>`).join('');
                     }
 
-                    const typeUpper = (prop.property_type || 'UNIT').toUpperCase();
-                    const tierUpper = (prop.price_category || 'MID-RANGE').toUpperCase();
+                    const typeName = prop.property_type || 'Apartment';
+                    const tierName = prop.price_category || 'Mid-Range';
 
                     card.innerHTML = `
                         <div class="prop-card-top">
-                            <span class="prop-type-badge">[ ${typeUpper} ]</span>
-                            <span class="prop-match-badge"><i class="fa-solid fa-crosshairs"></i> ${prop.match_score}% SIMILARITY</span>
+                            <span class="prop-type-badge">${typeName}</span>
+                            <span class="prop-match-badge"><i class="fa-solid fa-circle-check"></i> ${prop.match_score}% Match</span>
                         </div>
                         <div class="prop-card-body">
                             <div class="prop-location">
                                 <span class="prop-city">${prop.city}</span>
-                                <span class="prop-locality">/ ${prop.locality}</span>
+                                <span class="prop-locality">, ${prop.locality}</span>
                             </div>
                             <div class="prop-price-row">
                                 <div class="prop-price">${prop.formatted_price}</div>
-                                <div class="prop-tier-pill ${tierClass}">[ ${tierUpper} ]</div>
+                                <div class="prop-tier-pill ${tierClass}">${tierName}</div>
                             </div>
                             <div class="prop-specs-grid">
                                 <div class="prop-spec-item" title="Configuration">
-                                    <span class="spec-dim-label">LAYOUT:</span> <strong>${prop.bhk} BHK</strong>
+                                    <span class="spec-dim-label">Layout:</span> <strong>${prop.bhk} BHK</strong>
                                 </div>
                                 <div class="prop-spec-item" title="Carpet / Built-up Size">
-                                    <span class="spec-dim-label">AREA:</span> <strong>${Number(prop.size).toLocaleString('en-IN')} SQ.FT</strong>
+                                    <span class="spec-dim-label">Area:</span> <strong>${Number(prop.size).toLocaleString('en-IN')} sq.ft</strong>
                                 </div>
                                 <div class="prop-spec-item" title="Floor Number">
-                                    <span class="spec-dim-label">LEVEL:</span> <strong>${prop.floor_no} / ${prop.total_floors}</strong>
+                                    <span class="spec-dim-label">Floor:</span> <strong>${prop.floor_no} of ${prop.total_floors}</strong>
                                 </div>
                                 <div class="prop-spec-item" title="Property Age">
-                                    <span class="spec-dim-label">AGE:</span> <strong>${prop.age} YR</strong>
+                                    <span class="spec-dim-label">Age:</span> <strong>${prop.age} yrs</strong>
                                 </div>
                             </div>
                             <div class="prop-neighborhood-row">
-                                <span>SCH: ${prop.nearby_schools}</span>
-                                <span>HOSP: ${prop.nearby_hospitals}</span>
-                                <span>TRANSIT: ${prop.transport.toUpperCase()}</span>
-                                <span>${prop.furnished_status.toUpperCase()}</span>
+                                <span><i class="fa-solid fa-graduation-cap"></i> ${prop.nearby_schools} Schools</span>
+                                <span><i class="fa-solid fa-heart-pulse"></i> ${prop.nearby_hospitals} Hospitals</span>
+                                <span><i class="fa-solid fa-bus"></i> ${prop.transport} Transit</span>
+                                <span>${prop.furnished_status}</span>
                             </div>
                             ${amenitiesHtml ? `<div class="prop-amenities-row">${amenitiesHtml}</div>` : ''}
                         </div>
@@ -945,5 +484,4 @@
         }
     };
 </script>
-
 {% endblock %}
