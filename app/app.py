@@ -71,8 +71,18 @@ def predict_regression():
                 lakhs_val = float(pred_raw)
                 formatted_price = format_inr_price(lakhs_val)
             except ValueError:
+                lakhs_val = None
                 formatted_price = f"₹{pred_raw} Lakhs"
             prediction = f"Predicted Price: {formatted_price} (Linear Regression)"
+            return jsonify({
+                'prediction': prediction,
+                'formatted_price': formatted_price,
+                'raw_lakhs': lakhs_val,
+                'size': size,
+                'bhk': bhk,
+                'age': age,
+                'city': city
+            })
         else:
             prediction = "Error: Could not parse prediction from R output."
 
@@ -108,6 +118,16 @@ def predict_classification():
             dt_pred = preds[0].strip() if len(preds) > 0 else "N/A"
             rf_pred = preds[1].strip() if len(preds) > 1 else "N/A"
             prediction = f"Decision Tree: {dt_pred} | Random Forest: {rf_pred}"
+            return jsonify({
+                'prediction': prediction,
+                'dt_prediction': dt_pred,
+                'rf_prediction': rf_pred,
+                'size': size,
+                'bhk': bhk,
+                'age': age,
+                'city': city,
+                'image_url': '/static/decision_tree.png'
+            })
         else:
             prediction = "Error: Could not parse prediction from R output."
 
@@ -142,7 +162,11 @@ def generate_dendrogram():
             image_path = 'static/dendrogram.png'
 
         clean_path = image_path.lstrip('/')
-        return jsonify({'image_url': f"/{clean_path}"})
+        return jsonify({
+            'image_url': f"/{clean_path}",
+            'linkage': linkage,
+            'clusters': clusters
+        })
     except Exception as e:
         return jsonify({'error': str(e)})
 
