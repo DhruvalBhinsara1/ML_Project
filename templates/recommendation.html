@@ -477,13 +477,13 @@
                     </button>
 
                     <button type="button"
-                            class="chip-btn"
+                            class="chip-btn active"
                             onclick="setPreset('knn-hospitals', 3)">
                         3
                     </button>
 
                     <button type="button"
-                            class="chip-btn active"
+                            class="chip-btn"
                             onclick="setPreset('knn-hospitals', 5)">
                         5
                     </button>
@@ -546,9 +546,9 @@
 
 
         <!-- Probability Cards -->
-        <div class="models-comparison-grid">
+        <div class="models-comparison-grid three-cards">
 
-            <div class="model-card">
+            <div class="model-card tier-card" id="card-budget">
 
                 <div class="model-card-header">
                     <div class="model-name">
@@ -556,8 +556,7 @@
                             class="fa-solid fa-wallet"
                             style="color: var(--emerald-600);"
                         ></i>
-
-                        Budget
+                        Budget Tier
                     </div>
 
                     <span class="model-tag">
@@ -572,10 +571,14 @@
                     -
                 </div>
 
+                <div class="prob-progress-bar">
+                    <div class="prob-progress-fill budget-fill" id="knn-budget-fill" style="width: 0%;"></div>
+                </div>
+
             </div>
 
 
-            <div class="model-card">
+            <div class="model-card tier-card" id="card-mid">
 
                 <div class="model-card-header">
                     <div class="model-name">
@@ -583,8 +586,7 @@
                             class="fa-solid fa-chart-line"
                             style="color: var(--indigo-600);"
                         ></i>
-
-                        Mid-Range
+                        Mid-Range Tier
                     </div>
 
                     <span class="model-tag">
@@ -599,10 +601,14 @@
                     -
                 </div>
 
+                <div class="prob-progress-bar">
+                    <div class="prob-progress-fill mid-fill" id="knn-mid-fill" style="width: 0%;"></div>
+                </div>
+
             </div>
 
 
-            <div class="model-card">
+            <div class="model-card tier-card" id="card-premium">
 
                 <div class="model-card-header">
                     <div class="model-name">
@@ -610,8 +616,7 @@
                             class="fa-solid fa-crown"
                             style="color: var(--purple-600);"
                         ></i>
-
-                        Premium
+                        Premium Tier
                     </div>
 
                     <span class="model-tag">
@@ -624,6 +629,10 @@
                     id="knn-premium-prob"
                 >
                     -
+                </div>
+
+                <div class="prob-progress-bar">
+                    <div class="prob-progress-fill premium-fill" id="knn-premium-fill" style="width: 0%;"></div>
                 </div>
 
             </div>
@@ -710,6 +719,12 @@
         const budgetProb = document.getElementById('knn-budget-prob');
         const midProb = document.getElementById('knn-mid-prob');
         const premiumProb = document.getElementById('knn-premium-prob');
+        const budgetFill = document.getElementById('knn-budget-fill');
+        const midFill = document.getElementById('knn-mid-fill');
+        const premiumFill = document.getElementById('knn-premium-fill');
+        const cardBudget = document.getElementById('card-budget');
+        const cardMid = document.getElementById('card-mid');
+        const cardPremium = document.getElementById('card-premium');
         const bestK = document.getElementById('knn-best-k');
         const imgCard = document.getElementById('knn-img-card');
         const img = document.getElementById('knn-img');
@@ -734,21 +749,38 @@
             const primaryTier = data.category || "Mid-Range";
             mainBadge.className = 'segment-badge';
 
+            // Reset tier highlights
+            cardBudget.classList.remove('highlight-budget');
+            cardMid.classList.remove('highlight-mid');
+            cardPremium.classList.remove('highlight-premium');
+
             const tierLower = primaryTier.toLowerCase();
             if (tierLower.includes('budget')) {
                 mainBadge.classList.add('budget');
                 mainBadge.innerHTML = '<i class="fa-solid fa-wallet"></i> <span id="knn-category">' + primaryTier + ' Tier</span>';
+                cardBudget.classList.add('highlight-budget');
             } else if (tierLower.includes('premium')) {
                 mainBadge.classList.add('premium');
                 mainBadge.innerHTML = '<i class="fa-solid fa-crown"></i> <span id="knn-category">' + primaryTier + ' Tier</span>';
+                cardPremium.classList.add('highlight-premium');
             } else {
                 mainBadge.classList.add('mid-range');
                 mainBadge.innerHTML = '<i class="fa-solid fa-building"></i> <span id="knn-category">' + primaryTier + ' Tier</span>';
+                cardMid.classList.add('highlight-mid');
             }
 
             budgetProb.textContent = data.budget_prob;
             midProb.textContent = data.mid_prob;
             premiumProb.textContent = data.premium_prob;
+
+            const bPct = typeof data.budget_pct === 'number' ? data.budget_pct : parseFloat(data.budget_prob) || 0;
+            const mPct = typeof data.mid_pct === 'number' ? data.mid_pct : parseFloat(data.mid_prob) || 0;
+            const pPct = typeof data.premium_pct === 'number' ? data.premium_pct : parseFloat(data.premium_prob) || 0;
+
+            budgetFill.style.width = bPct + '%';
+            midFill.style.width = mPct + '%';
+            premiumFill.style.width = pPct + '%';
+
             bestK.textContent = 'K = ' + data.best_k;
 
             if (data.image_url) {

@@ -3,6 +3,7 @@
 A comprehensive machine learning system in **R** with an interactive **Flask** web application for real estate market analysis:
 - **Price Valuation (Linear Regression)**: Predict continuous property market valuations based on size, BHK, age, and location.
 - **Segment Classification (Decision Tree + Random Forest)**: Classify properties into market tiers (*Budget*, *Mid-Range*, *Premium*).
+- **Property Recommendation (K-Nearest Neighbors)**: Recommend property tier with class probability distributions based on structural and neighborhood metrics.
 - **Hierarchical Clustering (Dendrograms)**: Group similar properties using distance metrics and linkage methods.
 
 ---
@@ -23,6 +24,7 @@ A comprehensive machine learning system in **R** with an interactive **Flask** w
 │   ├── city_mapping.rds
 │   ├── dt_classifier.rds
 │   ├── rf_classifier.rds
+│   ├── knn_model.rds                   # Serialized KNN bundle (k=11, preProcess)
 │   ├── linear_regression.rds
 │   └── linearRegression.rds
 ├── outputs/                            # Generated standalone plots
@@ -36,7 +38,8 @@ A comprehensive machine learning system in **R** with an interactive **Flask** w
 │   ├── 01_data_preparation.R           # Data cleaning & train/test split
 │   ├── 02_decision_tree.R              # Decision tree model training & evaluation
 │   ├── 03_random_forest.R              # Random forest model training & evaluation
-│   └── 04_model_evaluation.R           # Comprehensive model evaluation
+│   ├── 04_model_evaluation.R           # Comprehensive model evaluation
+│   └── 05_knn.R                        # KNN hyperparameter tuning & evaluation
 ├── SRC/                                # Flask app backend R scripts
 │   ├── classification.R                # Classification training with city pricing score
 │   ├── dendrogram.R                    # Clustering script
@@ -44,24 +47,29 @@ A comprehensive machine learning system in **R** with an interactive **Flask** w
 │   ├── models/linearRegression.R       # Standalone linear regression pipeline
 │   ├── predict_classification.R        # Classification inference CLI
 │   ├── predict_dendrogram.R            # Dendrogram generation CLI
+│   ├── predict_knn.R                   # KNN inference CLI
 │   ├── predict_regression.R            # Regression inference CLI
 │   └── preprocessing.R                 # Shared data loading & preprocessing
 ├── static/                             # Web assets & dynamically generated images
 │   ├── css/style.css                   # Modular stylesheet
 │   ├── decision_tree.png
-│   └── dendrogram.png
+│   ├── dendrogram.png
+│   └── knn_accuracy_vs_k.png           # KNN optimization curve
 ├── templates/                          # Modular Jinja2 web UI templates
 │   ├── base.html                       # Global layout shell & lightbox modal
 │   ├── home.html                       # Landing overview & quick start cards
 │   ├── regression.html                 # Price valuation page (Linear Regression)
 │   ├── classification.html             # Market tier classifier page (DT + RF)
 │   ├── clustering.html                 # Hierarchical clustering & dendrogram page
+│   ├── recommendation.html             # Property recommendation page (KNN)
 │   ├── about.html                      # Project documentation & architecture page
 │   └── components/                     # Reusable Jinja2 UI components
 │       ├── sidebar.html                # Navigation sidebar with active route detection
 │       ├── mobile_header.html          # Responsive mobile header
 │       ├── city_options.html           # 42-city dropdown options
 │       └── lightbox.html               # Chart zoom modal
+├── tests/                              # Automated test suite
+│   └── test_app.py                     # Route & API integration tests
 └── requirements.txt                    # Python dependencies
 ```
 
@@ -103,13 +111,18 @@ Then open your browser and navigate to:
 👉 **`http://127.0.0.1:5001`**
 
 #### Available Web Routes:
-| Route | Description |
-| :--- | :--- |
-| **`/`** | Overview & Quick Start dashboard |
-| **`/regression`** | Price Valuation using Linear Regression (OLS) |
-| **`/classification`** | Property Tier Classification (Decision Tree & Random Forest) |
-| **`/clustering`** | Hierarchical Clustering & Dendrogram Generator |
-| **`/about`** | Project Documentation, Model Mathematics & Architecture |
+| Route | Method | Description |
+| :--- | :--- | :--- |
+| **`/`** | GET | Overview & Quick Start dashboard |
+| **`/regression`** | GET | Price Valuation using Linear Regression (OLS) |
+| **`/classification`** | GET | Property Tier Classification (Decision Tree & Random Forest) |
+| **`/clustering`** | GET | Hierarchical Clustering & Dendrogram Generator |
+| **`/recommendation`** | GET | Property Tier Recommendation (K-Nearest Neighbors) |
+| **`/about`** | GET | Project Documentation, Model Mathematics & Architecture |
+| **`/predict_regression`** | POST | Computes continuous valuation (`size`, `bhk`, `age`, `city`) |
+| **`/predict_classification`**| POST | Predicts tier using Decision Tree & Random Forest |
+| **`/generate_dendrogram`** | POST | Generates hierarchical clustering dendrogram plot |
+| **`/predict_knn`** | POST | Evaluates K-NN tier probabilities (`bhk`, `size`, `year_built`, etc.) |
 
 > **Note**: The web app runs on port `5001` by default to avoid macOS AirPlay Receiver port 5000 conflicts. You can customize the port using the `PORT` environment variable:
 > ```bash

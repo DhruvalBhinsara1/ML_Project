@@ -18,13 +18,20 @@ age <- as.numeric(args[6])
 nearby_schools <- as.numeric(args[7])
 nearby_hospitals <- as.numeric(args[8])
 
-model_path <- "models/knn_model.rds"
-if (!file.exists(model_path)) {
-  if (file.exists("../models/knn_model.rds")) {
-    model_path <- "../models/knn_model.rds"
-  } else {
-    stop("KNN model file not found at models/knn_model.rds")
-  }
+if (any(is.na(c(bhk, size, year_built, floor_no, total_floors, age, nearby_schools, nearby_hospitals)))) {
+  stop("All 8 arguments must be valid numeric values.")
+}
+
+candidate_paths <- c(
+  "models/knn_model.rds",
+  "../models/knn_model.rds",
+  "SRC/models/knn_model.rds",
+  file.path(getwd(), "models", "knn_model.rds")
+)
+
+model_path <- candidate_paths[file.exists(candidate_paths)][1]
+if (is.na(model_path) || !file.exists(model_path)) {
+  stop("KNN model file not found at models/knn_model.rds")
 }
 
 knn_bundle <- readRDS(model_path)

@@ -38,6 +38,32 @@ def format_inr_price(lakhs_val: float) -> str:
         return f"₹{lakhs_val:.2f} Lakhs"
 
 
+def get_param(key: str, default=None):
+    """Retrieve parameter from request, supporting both JSON payloads and form data."""
+    if request.is_json:
+        json_data = request.get_json(silent=True) or {}
+        if key in json_data:
+            return json_data[key]
+    val = request.form.get(key)
+    if val is not None:
+        return val
+    return default
+
+
+def parse_numeric(val, field_name: str, min_val=None, max_val=None, is_int=False):
+    """Validate and convert numeric input with optional range constraints."""
+    try:
+        converted = int(val) if is_int else float(val)
+    except (ValueError, TypeError):
+        raise ValueError(f"'{field_name}' must be a valid {'integer' if is_int else 'number'}.")
+    
+    if min_val is not None and converted < min_val:
+        raise ValueError(f"'{field_name}' must be greater than or equal to {min_val}.")
+    if max_val is not None and converted > max_val:
+        raise ValueError(f"'{field_name}' must be less than or equal to {max_val}.")
+    return converted
+
+
 @app.route('/')
 def home():
     return render_template('home.html', active_page='home')
@@ -57,12 +83,10 @@ def classification():
 def clustering():
     return render_template('clustering.html', active_page='clustering')
 
+
 @app.route('/recommendation')
 def recommendation():
-    return render_template(
-        'recommendation.html',
-        active_page='recommendation'
-    )
+    return render_template('recommendation.html', active_page='recommendation')
 
 
 @app.route('/about')
@@ -73,24 +97,32 @@ def about():
 @app.route('/predict_regression', methods=['POST'])
 def predict_regression():
     try:
-        size = request.form.get('size', '1500')
-        bhk = request.form.get('bhk', '3')
-        age = request.form.get('age', '5')
-        city = request.form.get('city', 'Pune')
+        size = get_param('size', '1500')
+        bhk = get_param('bhk', '3')
+        age = get_param('age', '5')
+        city = str(get_param('city', 'Pune')).strip()
+
+        # Validate numeric inputs
+        try:
+            val_size = parse_numeric(size, 'Size', min_val=50, max_val=50000)
+            val_bhk = parse_numeric(bhk, 'BHK', min_val=1, max_val=30, is_int=True)
+            val_age = parse_numeric(age, 'Age', min_val=0, max_val=200)
+        except ValueError as ve:
+            return jsonify({'error': str(ve)}), 400
 
         script_path = get_r_script_path('predict_regression.R')
         result = subprocess.run(
-            ['Rscript', script_path, str(size), str(bhk), str(age), str(city)],
+            ['Rscript', script_path, str(val_size), str(val_bhk), str(val_age), city],
             capture_output=True,
             text=True,
             cwd=PROJECT_ROOT
         )
 
         if result.returncode != 0:
-            return jsonify({'error': f"R Error: {result.stderr.strip() or result.stdout.strip()}"})
+            return jsonify({'error': f"R Error: {result.stderr.strip() or result.stdout.strip()}"}), 500
 
         output_lines = result.stdout.strip().split('\n')
-        pred_line = next((line for line in output_lines if line.startswith('RESULT:')), None)
+        pred_line = next((line.strip() for line in output_lines if line.strip().startswith('RESULT:')), None)
 
         if pred_line:
             pred_raw = pred_line.replace('RESULT:', '').strip()
@@ -105,83 +137,96 @@ def predict_regression():
                 'prediction': prediction,
                 'formatted_price': formatted_price,
                 'raw_lakhs': lakhs_val,
-                'size': size,
-                'bhk': bhk,
-                'age': age,
+                'size': val_size,
+                'bhk': val_bhk,
+                'age': val_age,
                 'city': city
             })
         else:
-            prediction = "Error: Could not parse prediction from R output."
-
-        return jsonify({'prediction': prediction})
+            return jsonify({'error': "Could not parse prediction from R output."}), 500
     except Exception as e:
-        return jsonify({'error': str(e)})
+        return jsonify({'error': str(e)}), 500
 
 
 @app.route('/predict_classification', methods=['POST'])
 def predict_classification():
     try:
-        size = request.form.get('size', '1500')
-        bhk = request.form.get('bhk', '3')
-        age = request.form.get('age', '5')
-        city = request.form.get('city', 'Pune')
+        size = get_param('size', '1500')
+        bhk = get_param('bhk', '3')
+        age = get_param('age', '5')
+        city = str(get_param('city', 'Pune')).strip()
+
+        # Validate numeric inputs
+        try:
+            val_size = parse_numeric(size, 'Size', min_val=50, max_val=50000)
+            val_bhk = parse_numeric(bhk, 'BHK', min_val=1, max_val=30, is_int=True)
+            val_age = parse_numeric(age, 'Age', min_val=0, max_val=200)
+        except ValueError as ve:
+            return jsonify({'error': str(ve)}), 400
 
         script_path = get_r_script_path('predict_classification.R')
         result = subprocess.run(
-            ['Rscript', script_path, str(size), str(bhk), str(age), str(city)],
+            ['Rscript', script_path, str(val_size), str(val_bhk), str(val_age), city],
             capture_output=True,
             text=True,
             cwd=PROJECT_ROOT
         )
 
         if result.returncode != 0:
-            return jsonify({'error': f"R Error: {result.stderr.strip() or result.stdout.strip()}"})
+            return jsonify({'error': f"R Error: {result.stderr.strip() or result.stdout.strip()}"}), 500
 
         output_lines = result.stdout.strip().split('\n')
-        pred_line = next((line for line in output_lines if line.startswith('RESULT:')), None)
+        pred_line = next((line.strip() for line in output_lines if line.strip().startswith('RESULT:')), None)
 
         if pred_line:
-            preds = pred_line.replace('RESULT:', '').strip().split('|')
-            dt_pred = preds[0].strip() if len(preds) > 0 else "N/A"
-            rf_pred = preds[1].strip() if len(preds) > 1 else "N/A"
+            preds = [p.strip() for p in pred_line.replace('RESULT:', '').strip().split('|')]
+            dt_pred = preds[0] if len(preds) > 0 else "N/A"
+            rf_pred = preds[1] if len(preds) > 1 else "N/A"
             prediction = f"Decision Tree: {dt_pred} | Random Forest: {rf_pred}"
             return jsonify({
                 'prediction': prediction,
                 'dt_prediction': dt_pred,
                 'rf_prediction': rf_pred,
-                'size': size,
-                'bhk': bhk,
-                'age': age,
+                'size': val_size,
+                'bhk': val_bhk,
+                'age': val_age,
                 'city': city,
                 'image_url': '/static/decision_tree.png'
             })
         else:
-            prediction = "Error: Could not parse prediction from R output."
-
-        return jsonify({'prediction': prediction, 'image_url': '/static/decision_tree.png'})
+            return jsonify({'error': "Could not parse prediction from R output."}), 500
     except Exception as e:
-        return jsonify({'error': str(e)})
+        return jsonify({'error': str(e)}), 500
 
 
 @app.route('/generate_dendrogram', methods=['POST'])
 def generate_dendrogram():
     try:
-        linkage = request.form.get('linkage', 'ward')
-        clusters = request.form.get('clusters', '3')
+        linkage = str(get_param('linkage', 'ward')).strip().lower()
+        clusters = get_param('clusters', '3')
+
+        valid_linkages = {'ward', 'complete', 'average', 'single'}
+        if linkage not in valid_linkages:
+            linkage = 'ward'
+
+        try:
+            val_clusters = parse_numeric(clusters, 'Clusters', min_val=2, max_val=15, is_int=True)
+        except ValueError as ve:
+            return jsonify({'error': str(ve)}), 400
 
         script_path = get_r_script_path('predict_dendrogram.R')
         result = subprocess.run(
-            ['Rscript', script_path, str(linkage), str(clusters)],
+            ['Rscript', script_path, linkage, str(val_clusters)],
             capture_output=True,
             text=True,
             cwd=PROJECT_ROOT
         )
 
         if result.returncode != 0:
-            return jsonify({'error': f"R Error: {result.stderr.strip() or result.stdout.strip()}"})
+            return jsonify({'error': f"R Error: {result.stderr.strip() or result.stdout.strip()}"}), 500
 
         output_lines = result.stdout.strip().split('\n')
-        res_line = next((line for line in output_lines if line.startswith('RESULT:')), None)
+        res_line = next((line.strip() for line in output_lines if line.strip().startswith('RESULT:')), None)
 
         if res_line:
             image_path = res_line.replace('RESULT:', '').strip()
@@ -192,31 +237,44 @@ def generate_dendrogram():
         return jsonify({
             'image_url': f"/{clean_path}",
             'linkage': linkage,
-            'clusters': clusters
+            'clusters': val_clusters
         })
     except Exception as e:
-        return jsonify({'error': str(e)})
+        return jsonify({'error': str(e)}), 500
 
 
 @app.route('/predict_knn', methods=['POST'])
 @app.route('/predict_recommendation', methods=['POST'])
 def predict_knn():
     try:
-        bhk = request.form.get('bhk', '3')
-        size = request.form.get('size', '1800')
-        year_built = request.form.get('year_built', '2020')
-        floor_no = request.form.get('floor_no', '3')
-        total_floors = request.form.get('total_floors', '10')
-        age = request.form.get('age', '5')
-        nearby_schools = request.form.get('nearby_schools', '5')
-        nearby_hospitals = request.form.get('nearby_hospitals', '3')
+        bhk = get_param('bhk', '3')
+        size = get_param('size', '1800')
+        year_built = get_param('year_built', '2020')
+        floor_no = get_param('floor_no', '3')
+        total_floors = get_param('total_floors', '10')
+        age = get_param('age', '5')
+        nearby_schools = get_param('nearby_schools', '5')
+        nearby_hospitals = get_param('nearby_hospitals', '3')
+
+        # Validate all numeric inputs
+        try:
+            val_bhk = parse_numeric(bhk, 'BHK', min_val=1, max_val=30, is_int=True)
+            val_size = parse_numeric(size, 'Size', min_val=50, max_val=50000)
+            val_year = parse_numeric(year_built, 'Year Built', min_val=1800, max_val=2100, is_int=True)
+            val_floor = parse_numeric(floor_no, 'Floor Number', min_val=0, max_val=200, is_int=True)
+            val_total_floors = parse_numeric(total_floors, 'Total Floors', min_val=1, max_val=250, is_int=True)
+            val_age = parse_numeric(age, 'Age', min_val=0, max_val=200)
+            val_schools = parse_numeric(nearby_schools, 'Nearby Schools', min_val=0, max_val=100, is_int=True)
+            val_hospitals = parse_numeric(nearby_hospitals, 'Nearby Hospitals', min_val=0, max_val=100, is_int=True)
+        except ValueError as ve:
+            return jsonify({'error': str(ve)}), 400
 
         script_path = get_r_script_path('predict_knn.R')
         result = subprocess.run(
             [
                 'Rscript', script_path,
-                str(bhk), str(size), str(year_built), str(floor_no),
-                str(total_floors), str(age), str(nearby_schools), str(nearby_hospitals)
+                str(val_bhk), str(val_size), str(val_year), str(val_floor),
+                str(val_total_floors), str(val_age), str(val_schools), str(val_hospitals)
             ],
             capture_output=True,
             text=True,
@@ -224,39 +282,51 @@ def predict_knn():
         )
 
         if result.returncode != 0:
-            return jsonify({'error': f"R Error: {result.stderr.strip() or result.stdout.strip()}"})
+            return jsonify({'error': f"R Error: {result.stderr.strip() or result.stdout.strip()}"}), 500
 
         output_lines = result.stdout.strip().split('\n')
-        res_line = next((line for line in output_lines if line.startswith('RESULT:')), None)
+        res_line = next((line.strip() for line in output_lines if line.strip().startswith('RESULT:')), None)
 
         if res_line:
             parts = [p.strip() for p in res_line.replace('RESULT:', '').split('|')]
             category = parts[0] if len(parts) > 0 else "Unknown"
-            budget_prob = parts[1] if len(parts) > 1 else "0.0"
-            mid_prob = parts[2] if len(parts) > 2 else "0.0"
-            premium_prob = parts[3] if len(parts) > 3 else "0.0"
+
+            def safe_pct(part_idx: int) -> float:
+                if len(parts) > part_idx:
+                    try:
+                        return float(parts[part_idx])
+                    except ValueError:
+                        pass
+                return 0.0
+
+            budget_pct = safe_pct(1)
+            mid_pct = safe_pct(2)
+            premium_pct = safe_pct(3)
             best_k = parts[4] if len(parts) > 4 else "11"
 
             return jsonify({
                 'category': category,
-                'budget_prob': f"{budget_prob}%",
-                'mid_prob': f"{mid_prob}%",
-                'premium_prob': f"{premium_prob}%",
+                'budget_prob': f"{budget_pct:.1f}%",
+                'mid_prob': f"{mid_pct:.1f}%",
+                'premium_prob': f"{premium_pct:.1f}%",
+                'budget_pct': budget_pct,
+                'mid_pct': mid_pct,
+                'premium_pct': premium_pct,
                 'best_k': best_k,
                 'image_url': '/static/knn_accuracy_vs_k.png',
-                'bhk': bhk,
-                'size': size,
-                'year_built': year_built,
-                'floor_no': floor_no,
-                'total_floors': total_floors,
-                'age': age,
-                'nearby_schools': nearby_schools,
-                'nearby_hospitals': nearby_hospitals
+                'bhk': val_bhk,
+                'size': val_size,
+                'year_built': val_year,
+                'floor_no': val_floor,
+                'total_floors': val_total_floors,
+                'age': val_age,
+                'nearby_schools': val_schools,
+                'nearby_hospitals': val_hospitals
             })
         else:
-            return jsonify({'error': "Could not parse prediction from R output."})
+            return jsonify({'error': "Could not parse prediction from R output."}), 500
     except Exception as e:
-        return jsonify({'error': str(e)})
+        return jsonify({'error': str(e)}), 500
 
 
 if __name__ == '__main__':

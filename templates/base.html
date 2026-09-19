@@ -50,7 +50,7 @@
 
     <!-- Global JavaScript Helpers -->
     <script>
-        // Preset Helper
+        // Preset Helper with exact argument matching
         function setPreset(inputId, value) {
             const input = document.getElementById(inputId);
             if (!input) return;
@@ -58,9 +58,11 @@
 
             const group = input.closest('.form-group');
             if (group) {
+                const targetValStr = String(value);
                 group.querySelectorAll('.chip-btn').forEach(btn => {
                     const onclickAttr = btn.getAttribute('onclick') || '';
-                    if (onclickAttr.includes(`'${value}'`) || onclickAttr.includes(`, ${value}`)) {
+                    const match = onclickAttr.match(/setPreset\s*\(\s*['"][^'"]+['"]\s*,\s*['"]?([^'")\s]+)['"]?\s*\)/);
+                    if (match && match[1] === targetValStr) {
                         btn.classList.add('active');
                     } else {
                         btn.classList.remove('active');
@@ -68,6 +70,25 @@
                 });
             }
         }
+
+        // Synchronize active chips when user types manually in an input
+        document.addEventListener('input', function(e) {
+            if (e.target.matches('input[type="number"], input[type="text"]')) {
+                const group = e.target.closest('.form-group');
+                if (group) {
+                    const currentVal = String(e.target.value).trim();
+                    group.querySelectorAll('.chip-btn').forEach(btn => {
+                        const onclickAttr = btn.getAttribute('onclick') || '';
+                        const match = onclickAttr.match(/setPreset\s*\(\s*['"][^'"]+['"]\s*,\s*['"]?([^'")\s]+)['"]?\s*\)/);
+                        if (match && match[1] === currentVal) {
+                            btn.classList.add('active');
+                        } else {
+                            btn.classList.remove('active');
+                        }
+                    });
+                }
+            }
+        });
 
         // Mobile Sidebar Toggles
         function toggleSidebar() {

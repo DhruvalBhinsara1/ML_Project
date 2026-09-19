@@ -976,6 +976,59 @@ form {
     color: var(--slate-900);
 }
 
+.models-comparison-grid.three-cards {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.model-card.tier-card {
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+}
+
+.model-card.tier-card.highlight-budget {
+    border-color: var(--emerald-400);
+    background: #f0fdf4;
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.12);
+}
+
+.model-card.tier-card.highlight-mid {
+    border-color: #818cf8;
+    background: #eef2ff;
+    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.12);
+}
+
+.model-card.tier-card.highlight-premium {
+    border-color: #c084fc;
+    background: #faf5ff;
+    box-shadow: 0 4px 14px rgba(168, 85, 247, 0.12);
+}
+
+.prob-progress-bar {
+    height: 6px;
+    background: var(--slate-200);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-top: 12px;
+}
+
+.prob-progress-fill {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.prob-progress-fill.budget-fill {
+    background: linear-gradient(90deg, var(--emerald-500), var(--emerald-600));
+}
+
+.prob-progress-fill.mid-fill {
+    background: linear-gradient(90deg, var(--indigo-500), var(--indigo-600));
+}
+
+.prob-progress-fill.premium-fill {
+    background: linear-gradient(90deg, var(--purple-500), var(--purple-600));
+}
+
 /* Image Preview Box */
 .image-preview-card {
     margin-top: 20px;
