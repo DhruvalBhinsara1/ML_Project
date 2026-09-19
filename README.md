@@ -130,12 +130,13 @@ Then open your browser and navigate to:
   Rscript ml/clustering.R
   ```
 
-* **Classification Pipeline (Data Preparation, Decision Tree, Random Forest):**
+* **Classification Pipeline (Data Preparation, Decision Tree, Random Forest, KNN):**
   ```bash
   Rscript R/01_data_preparation.R
   Rscript R/02_decision_tree.R
   Rscript R/03_random_forest.R
   Rscript R/04_model_evaluation.R
+  Rscript R/05_knn.R
   ```
 
 * **Train Web App Models (Fast City-Encoded Classification & Regression):**
@@ -152,6 +153,7 @@ Then open your browser and navigate to:
 | :--- | :--- | :--- |
 | **Linear Regression** | Price Prediction (Continuous) | $R^2 = 0.9643$, MAE: $9.96$ Lakhs |
 | **Random Forest** | Tier Classification (Multiclass) | Accuracy: **$93.35\%$**, F1: **$0.933$** |
+| **KNN (K=11)** | Tier Classification (Multiclass) | Accuracy: **$88.68\%$**, F1: **$0.887$** |
 | **Decision Tree** | Tier Classification (Multiclass) | Accuracy: **$88.44\%$**, F1: **$0.883$** |
 | **Hierarchical Clustering** | Property Grouping (Unsupervised) | Ward's method on Euclidean distance |
 
