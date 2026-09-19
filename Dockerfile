@@ -29,11 +29,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application source code, models, static assets, and templates
 COPY . .
 
-# Ensure runtime directories exist with write permissions for generated plots
-RUN mkdir -p static outputs plots models results data/raw
+# Ensure runtime directories exist with write permissions for generated plots (UID 1000 compatible for HF Spaces)
+RUN mkdir -p static outputs plots models results data/raw && \
+    chmod -R 777 static outputs plots models results
 
-# Expose standard container port
-EXPOSE 5001
+# Expose standard ports (7860 for Hugging Face Spaces, 5001 for local/other hosts)
+EXPOSE 7860 5001
 
 # Start the Flask production application via Gunicorn WSGI
-CMD exec gunicorn --bind 0.0.0.0:${PORT:-5001} --workers 2 --threads 4 --timeout 120 "app.app:app"
+CMD exec gunicorn --bind 0.0.0.0:${PORT:-7860} --workers 2 --threads 4 --timeout 120 "app.app:app"
