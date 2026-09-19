@@ -154,3 +154,21 @@ Then open your browser and navigate to:
 | **Random Forest** | Tier Classification (Multiclass) | Accuracy: **$93.35\%$**, F1: **$0.933$** |
 | **Decision Tree** | Tier Classification (Multiclass) | Accuracy: **$88.44\%$**, F1: **$0.883$** |
 | **Hierarchical Clustering** | Property Grouping (Unsupervised) | Ward's method on Euclidean distance |
+
+---
+
+## 🚀 Production Deployment
+
+The application is containerized with Docker to support its hybrid Python + R architecture and bundles all pretrained models in `models/`.
+
+Detailed step-by-step instructions for popular platforms are available in [DEPLOYMENT.md](DEPLOYMENT.md):
+- **Render** (Recommended — GitHub auto-deploy)
+- **Railway** (One-click Docker deploy)
+- **Google Cloud Run** (Serverless container with free tier)
+- **Hugging Face Spaces** (Free 16GB Docker space)
+- **Linux VPS / Docker Compose** (`docker compose up -d`)
+
+Quick local Docker test:
+```bash
+docker compose up --build
+```
