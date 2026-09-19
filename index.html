@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>House Predictor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --sidebar-bg: #1c2b27;
+            --main-bg: #fdf5e6;
+            --primary-dark: #14221d;
+            --text-light: #94b3a4;
+            --active-bg: #4c826e;
+            --border-color: #d1e6db;
+            --icon-bg: #e6f0eb;
+            --icon-color: #558774;
+            --card-bg: #ffffff;
+            --badge-bg: #d4eadc;
+        }
+
+        * { box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; margin: 0; padding: 0; display: flex; height: 100vh; overflow: hidden; background: var(--main-bg); color: var(--primary-dark); }
+        
+        /* Sidebar */
+        .sidebar { width: 280px; background: var(--sidebar-bg); color: white; display: flex; flex-direction: column; padding: 30px 20px; z-index: 10;}
+        .sidebar-header { display: flex; align-items: center; margin-bottom: 40px; }
+        .sidebar-logo { width: 45px; height: 45px; background: #689e8a; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; margin-right: 15px; color: var(--primary-dark); }
+        .sidebar-header h2 { margin: 0; font-size: 18px; font-weight: 700; color: white;}
+        .sidebar-header p { margin: 2px 0 0 0; font-size: 12px; color: #689e8a; }
+        
+        .sidebar-title { font-size: 11px; text-transform: uppercase; color: #5a7b6b; letter-spacing: 1px; margin-bottom: 12px; margin-left: 10px; font-weight: 700;}
+        
+        .sidebar a { color: var(--text-light); padding: 12px 15px; margin-bottom: 5px; text-decoration: none; cursor: pointer; border-radius: 8px; font-size: 14px; font-weight: 500; transition: 0.2s; display: flex; align-items: center;}
+        .sidebar a i { margin-right: 12px; font-size: 16px; width: 20px; text-align: center;}
+        .sidebar a:hover { background: rgba(255,255,255,0.05); color: white; }
+        .sidebar a.active { background: var(--active-bg); color: white; font-weight: 600;}
+        
+        /* Bottom Widget */
+        .bottom-widget { margin-top: auto; background: #15221e; border-radius: 12px; padding: 15px; border: 1px solid #23352f;}
+        .widget-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;}
+        .widget-top h4 { margin: 0; font-size: 12px; color: white; font-weight: 600;}
+        .badge { background: #2f5446; color: #7fba9f; font-size: 10px; padding: 3px 8px; border-radius: 20px; font-weight: 600;}
+        .widget-mid { font-size: 11px; color: var(--text-light); margin-bottom: 15px;}
+        .widget-bot { display: flex; justify-content: space-between; font-size: 10px; color: #5a7b6b;}
+        
+        /* Main Content */
+        .main-content { flex-grow: 1; overflow-y: auto; padding: 40px 60px; }
+        
+        /* Top Bar */
+        .top-bar { display: flex; justify-content: space-between; align-items: center; max-width: 750px; margin: 0 auto 30px auto; }
+        .breadcrumbs { font-size: 14px; font-weight: 600; color: var(--primary-dark); }
+        .breadcrumbs span { color: #82a895; margin: 0 5px; }
+        .top-badge { background: var(--badge-bg); color: var(--primary-dark); padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1px solid #b8d4c5;}
+        
+        .container { max-width: 750px; margin: 0 auto; background: var(--card-bg); border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.04); border: 1px solid #f0f0f0; overflow: hidden; padding-bottom: 10px;}
+        
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Form Header */
+        .form-header { display: flex; padding: 30px 40px; border-bottom: 1px solid #f2f2f2; }
+        .header-icon { width: 50px; height: 50px; background: var(--icon-bg); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; color: var(--icon-color); margin-right: 20px; flex-shrink: 0;}
+        .header-text h2 { margin: 0 0 5px 0; font-size: 22px; font-weight: 700; }
+        .header-text p { margin: 0; font-size: 13px; color: var(--icon-color); font-weight: 500; line-height: 1.5; }
+
+        /* Form Body */
+        form { padding: 30px 40px; }
+        .form-group { margin-bottom: 25px; }
+        .form-group label { display: block; font-size: 11px; text-transform: uppercase; color: var(--primary-dark); margin-bottom: 8px; font-weight: 700; letter-spacing: 0.5px;}
+        
+        /* Input Styling */
+        .input-group { display: flex; border: 1px solid var(--border-color); border-radius: 10px; overflow: hidden; background: white; transition: 0.2s;}
+        .input-group:focus-within { border-color: var(--icon-color); box-shadow: 0 0 0 3px rgba(85, 135, 116, 0.1); }
+        .input-icon { width: 45px; background: var(--icon-bg); display: flex; align-items: center; justify-content: center; color: var(--icon-color); font-size: 16px; border-right: 1px solid var(--border-color);}
+        .input-group input, .input-group select { flex-grow: 1; border: none; padding: 14px 15px; font-size: 14px; color: var(--primary-dark); outline: none; background: transparent; font-family: 'Inter', sans-serif;}
+        .input-group input::placeholder { color: #a0b5ab; font-weight: 500;}
+        
+        /* Select Chevron */
+        .select-wrapper { flex-grow: 1; display: flex; position: relative; }
+        .select-wrapper select { appearance: none; width: 100%; cursor: pointer; font-weight: 500;}
+        .select-wrapper::after { content: '\f107'; font-family: 'Font Awesome 6 Free'; font-weight: 900; position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--icon-color); pointer-events: none;}
+
+        /* Buttons */
+        button[type="submit"] {
+            background: var(--primary-dark); color: white; border: none; padding: 16px; width: 100%;
+            border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 10px; transition: 0.2s;
+        }
+        button[type="submit"]:hover { background: #263d35; }
+        
+        .result { margin: 20px 40px 30px 40px; font-weight: bold; text-align: center; color: var(--active-bg); padding: 15px; background: var(--icon-bg); border-radius: 10px; border: 1px dashed var(--icon-color);}
+        
+        .footer-text { text-align: center; font-size: 11px; color: var(--icon-color); margin-top: 30px; font-weight: 500; }
+        
+        /* Welcome Screen override */
+        .welcome-screen { text-align: center; padding: 60px 40px; }
+        .welcome-screen h1 { font-size: 32px; color: var(--primary-dark); margin-bottom: 15px;}
+        .welcome-screen p { color: var(--icon-color); font-size: 16px; margin-bottom: 30px; max-width: 500px; margin-left: auto; margin-right: auto;}
+        .welcome-btn { background: var(--active-bg); color: white; border: none; padding: 12px 30px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer;}
+
+        /* About Section */
+        .about-section { padding: 35px 40px 40px 40px; }
+        .about-hero { text-align: center; padding: 10px 10px 30px 10px; }
+        .about-hero .about-icon {
+            width: 58px; height: 58px; margin: 0 auto 15px auto;
+            background: var(--icon-bg); color: var(--icon-color);
+            border-radius: 16px; display: flex; align-items: center;
+            justify-content: center; font-size: 25px;
+        }
+        .about-hero h2 { margin: 0 0 10px 0; font-size: 28px; }
+        .about-hero p {
+            margin: 0 auto; max-width: 620px; color: var(--icon-color);
+            font-size: 14px; line-height: 1.7;
+        }
+        .about-block { border-top: 1px solid #f0f0f0; padding: 24px 0; }
+        .about-block h3 { margin: 0 0 10px 0; font-size: 16px; color: var(--primary-dark); }
+        .about-block p { margin: 0; color: #60776d; font-size: 13px; line-height: 1.7; }
+        .about-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 15px; }
+        .about-card { background: #f8fbf9; border: 1px solid var(--border-color); border-radius: 12px; padding: 18px; }
+        .about-card i { color: var(--icon-color); font-size: 18px; margin-bottom: 10px; }
+        .about-card h4 { margin: 0 0 7px 0; font-size: 14px; }
+        .about-card p { margin: 0; color: #6b8177; font-size: 12px; line-height: 1.6; }
+        .tech-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+        .tech-tag {
+            background: var(--badge-bg); border: 1px solid #b8d4c5;
+            color: var(--primary-dark); padding: 7px 11px; border-radius: 20px;
+            font-size: 11px; font-weight: 600;
+        }
+        .about-note {
+            background: var(--icon-bg); border: 1px dashed var(--icon-color);
+            border-radius: 10px; padding: 15px; margin-top: 15px;
+            color: var(--primary-dark); font-size: 12px; line-height: 1.6;
+        }
+        @media (max-width: 700px) {
+            .about-grid { grid-template-columns: 1fr; }
+            .about-section { padding: 25px 20px 30px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo"><i class="fa-solid fa-house"></i></div>
+            <div>
+                <h2>House Predictor</h2>
+                <p>ML Classification</p>
+            </div>
+        </div>
+        
+        <div class="sidebar-title">Menu</div>
+        <a class="nav-link active" onclick="showTab('home', 'Overview', '')"><i class="fa-solid fa-house-chimney"></i> Home</a>
+        <a class="nav-link" onclick="showTab('about', 'About Project', 'About')"><i class="fa-solid fa-circle-info"></i> About</a>
+        
+        <div class="sidebar-title" style="margin-top: 30px;">Models</div>
+        <a class="nav-link" onclick="showTab('regression', 'Linear Regression', 'Regression')"><i class="fa-solid fa-chart-line"></i> Linear Regression</a>
+        <a class="nav-link" onclick="showTab('classification', 'Decision Tree + Random Forest', 'Classification')"><i class="fa-solid fa-arrow-up-from-bracket"></i> Decision Tree + RF</a>
+        <a class="nav-link" onclick="showTab('clustering', 'Dendrogram + Clustering', 'Clustering')"><i class="fa-solid fa-layer-group"></i> Dendrogram + Clustering</a>
+        
+        <div class="bottom-widget">
+            <div class="widget-top">
+                <h4>Model Engine</h4>
+                <span class="badge">Active</span>
+            </div>
+            <div class="widget-mid">R-Lang Models v1.3</div>
+            <div class="widget-bot">
+                <span>Trained on 250,000 units</span>
+                <span>v1.0</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        
+        <div class="top-bar" id="top-bar" style="display:none;">
+            <div class="breadcrumbs">Models <span>></span> <span id="breadcrumb-current">Classification</span></div>
+            <div class="top-badge">Real Estate Analytics</div>
+        </div>
+
+        <!-- HOME / LANDING TAB -->
+        <div id="home" class="tab-content active">
+            <div class="container">
+                <div class="welcome-screen">
+                    <h1>Welcome to House Predictor</h1>
+                    <p>An intelligent machine learning system designed to predict property prices, classify buyer segments, and group similar properties.</p>
+                    <button class="welcome-btn" onclick="document.querySelectorAll('.nav-link')[2].click()">Get Started</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="container" id="forms-container" style="display:none;">
+
+            <!-- ABOUT TAB -->
+            <div id="about" class="tab-content">
+                <div class="about-section">
+
+                    <div class="about-hero">
+                        <div class="about-icon">
+                            <i class="fa-solid fa-circle-info"></i>
+                        </div>
+                        <h2>About House Predictor</h2>
+                        <p>
+                            House Predictor is a machine learning-based real estate
+                            analytics system designed to analyze housing information,
+                            predict property prices, classify property segments, and
+                            group similar properties.
+                        </p>
+                    </div>
+
+                    <div class="about-block">
+                        <h3><i class="fa-solid fa-bullseye"></i> Project Objective</h3>
+                        <p>
+                            The project demonstrates how machine learning can be applied
+                            to housing data to support property price prediction,
+                            property classification, and exploratory analysis of
+                            similarities between properties.
+                        </p>
+                    </div>
+
+                    <div class="about-block">
+                        <h3><i class="fa-solid fa-brain"></i> Machine Learning Models</h3>
+                        <div class="about-grid">
+
+                            <div class="about-card">
+                                <i class="fa-solid fa-chart-line"></i>
+                                <h4>Linear Regression</h4>
+                                <p>
+                                    Predicts the continuous estimated price of a property
+                                    from selected property characteristics.
+                                </p>
+                            </div>
+
+                            <div class="about-card">
+                                <i class="fa-solid fa-sitemap"></i>
+                                <h4>Decision Tree</h4>
+                                <p>
+                                    Uses decision rules based on property characteristics
+                                    to classify properties into different segments.
+                                </p>
+                            </div>
+
+                            <div class="about-card">
+                                <i class="fa-solid fa-tree"></i>
+                                <h4>Random Forest</h4>
+                                <p>
+                                    Combines multiple decision trees to provide an
+                                    ensemble-based classification approach.
+                                </p>
+                            </div>
+
+                            <div class="about-card">
+                                <i class="fa-solid fa-layer-group"></i>
+                                <h4>Hierarchical Clustering</h4>
+                                <p>
+                                    Groups similar properties using hierarchical
+                                    clustering and visualizes the relationships through
+                                    a dendrogram.
+                                </p>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="about-block">
+                        <h3><i class="fa-solid fa-gears"></i> How the System Works</h3>
+                        <p>
+                            Users enter property information or select clustering
+                            parameters through the web interface. The backend processes
+                            the inputs and connects them with the corresponding machine
+                            learning workflow. The system then returns a prediction,
+                            classification result, or clustering visualization.
+                        </p>
+                        <div class="about-note">
+                            <strong>Analysis:</strong>
+                            The system uses housing attributes such as property size,
+                            BHK, property age, city, and other available characteristics
+                            depending on the selected model.
+                        </div>
+                    </div>
+
+                    <div class="about-block">
+                        <h3><i class="fa-solid fa-code"></i> Technologies Used</h3>
+                        <div class="tech-list">
+                            <span class="tech-tag">Python</span>
+                            <span class="tech-tag">Flask</span>
+                            <span class="tech-tag">R</span>
+                            <span class="tech-tag">HTML</span>
+                            <span class="tech-tag">CSS</span>
+                            <span class="tech-tag">JavaScript</span>
+                            <span class="tech-tag">Machine Learning</span>
+                        </div>
+                    </div>
+
+                    <div class="about-block">
+                        <h3><i class="fa-solid fa-users"></i> Project Team</h3>
+                        <p>
+                            This project was developed as a collaborative four-member
+                            machine learning project. Each team member contributes to
+                            different models, analysis components, and application
+                            integration.
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+
+            
+            <!-- REGRESSION TAB -->
+            <div id="regression" class="tab-content">
+                <div class="form-header">
+                    <div class="header-icon"><i class="fa-solid fa-chart-line"></i></div>
+                    <div class="header-text">
+                        <h2>Linear Regression</h2>
+                        <p>Enter property parameters to accurately predict the continuous real-estate price valuation.</p>
+                    </div>
+                </div>
+                <form id="reg-form">
+                    <div class="form-group">
+                        <label>Size (Sq.Ft)</label>
+                        <div class="input-group">
+                            <div class="input-icon"><i class="fa-solid fa-maximize"></i></div>
+                            <input type="number" name="size" placeholder="e.g. 1800" min="100" max="20000" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>BHK (Bedrooms)</label>
+                        <div class="input-group">
+                            <div class="input-icon"><i class="fa-solid fa-bed"></i></div>
+                            <input type="number" name="bhk" placeholder="e.g. 3" min="1" max="20" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Property Age (Years)</label>
+                        <div class="input-group">
+                            <div class="input-icon"><i class="fa-regular fa-calendar"></i></div>
+                            <input type="number" name="age" placeholder="e.g. 5" min="0" max="150" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>City</label>
+                        <div class="input-group">
+                            <div class="input-icon"><i class="fa-regular fa-building"></i></div>
+                            <div class="select-wrapper">
+                                <select name="city" required>
+                                    <option value="Pune">Pune</option>
+                                    <option value="Mumbai">Mumbai</option>
+                                    <option value="New Delhi">New Delhi</option>
+                                    <option value="Bangalore">Bangalore</option>
+                                    <option value="Chennai">Chennai</option>
+                                    <option value="Hyderabad">Hyderabad</option>
+                                    <option value="Ahmedabad">Ahmedabad</option>
+                                    <option value="Gurgaon">Gurgaon</option>
+                                    <option value="Kolkata">Kolkata</option>
+                                    <option value="Ludhiana">Ludhiana</option>
+                                    <option value="Jaipur">Jaipur</option>
+                                    <option value="Lucknow">Lucknow</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit">Predict Price</button>
+                </form>
+                <div id="reg-result" class="result" style="display:none;"></div>
+            </div>
+
+            <!-- CLASSIFICATION TAB -->
+            <div id="classification" class="tab-content">
+                <div class="form-header">
+                    <div class="header-icon"><i class="fa-solid fa-sitemap"></i></div>
+                    <div class="header-text">
+                        <h2>Decision Tree + Random Forest</h2>
+                        <p>Enter property parameters to evaluate and classify real-estate segment tier.</p>
+                    </div>
+                </div>
+                <form id="class-form">
+                    <div class="form-group">
+                        <label>Size (Sq.Ft)</label>
+                        <div class="input-group">
+                            <div class="input-icon"><i class="fa-solid fa-maximize"></i></div>
+                            <input type="number" name="size" placeholder="e.g. 1800" min="100" max="20000" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>BHK (Bedrooms)</label>
+                        <div class="input-group">
+                            <div class="input-icon"><i class="fa-solid fa-bed"></i></div>
+                            <input type="number" name="bhk" placeholder="e.g. 3" min="1" max="20" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Property Age (Years)</label>
+                        <div class="input-group">
+                            <div class="input-icon"><i class="fa-regular fa-calendar"></i></div>
+                            <input type="number" name="age" placeholder="e.g. 5" min="0" max="150" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>City</label>
+                        <div class="input-group">
+                            <div class="input-icon"><i class="fa-regular fa-building"></i></div>
+                            <div class="select-wrapper">
+                                <select name="city" required>
+                                    <option value="Pune">Pune</option>
+                                    <option value="Mumbai">Mumbai</option>
+                                    <option value="New Delhi">New Delhi</option>
+                                    <option value="Bangalore">Bangalore</option>
+                                    <option value="Chennai">Chennai</option>
+                                    <option value="Hyderabad">Hyderabad</option>
+                                    <option value="Ahmedabad">Ahmedabad</option>
+                                    <option value="Gurgaon">Gurgaon</option>
+                                    <option value="Kolkata">Kolkata</option>
+                                    <option value="Ludhiana">Ludhiana</option>
+                                    <option value="Jaipur">Jaipur</option>
+                                    <option value="Lucknow">Lucknow</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit">Predict Category</button>
+                </form>
+                <div id="class-result" class="result" style="display:none; flex-direction: column; align-items: center;">
+                    <span id="class-msg" style="font-size: 16px;"></span>
+                    <img id="dt-img" src="" alt="Decision Tree" style="max-width: 100%; border-radius: 8px; display: none; margin-top: 15px; border: 1px solid var(--border-color);">
+                </div>
+            </div>
+
+            <!-- CLUSTERING TAB -->
+            <div id="clustering" class="tab-content">
+                <div class="form-header">
+                    <div class="header-icon"><i class="fa-solid fa-layer-group"></i></div>
+                    <div class="header-text">
+                        <h2>Dendrogram + Clustering</h2>
+                        <p>Configure distance metrics to generate a hierarchical map grouping similar properties.</p>
+                    </div>
+                </div>
+                <form id="clust-form">
+                    <div class="form-group">
+                        <label>Linkage Method</label>
+                        <div class="input-group">
+                            <div class="input-icon"><i class="fa-solid fa-link"></i></div>
+                            <div class="select-wrapper">
+                                <select name="linkage">
+                                    <option value="ward">Ward</option>
+                                    <option value="complete">Complete</option>
+                                    <option value="average">Average</option>
+                                    <option value="single">Single</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Distance Metric</label>
+                        <div class="input-group">
+                            <div class="input-icon"><i class="fa-solid fa-ruler-horizontal"></i></div>
+                            <div class="select-wrapper">
+                                <select name="distance">
+                                    <option value="euclidean">Euclidean</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Number of Clusters</label>
+                        <div class="input-group">
+                            <div class="input-icon"><i class="fa-solid fa-cubes"></i></div>
+                            <input type="number" name="clusters" value="3" min="1" max="10">
+                        </div>
+                    </div>
+                    
+                    <button type="submit">Generate Dendrogram</button>
+                </form>
+                <div id="clust-result" class="result" style="display:none; text-align: center; padding: 20px;">
+                    <img id="dendrogram-img" src="" alt="Dendrogram" style="max-width: 100%; border-radius: 8px; display: none;">
+                    <span id="clust-msg"></span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-text" id="footer-text" style="display:none;">
+            House Predictor • Ensemble Model Demo
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabId, modelName, crumbName) {
+            document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            
+            const container = document.getElementById('forms-container');
+            const topBar = document.getElementById('top-bar');
+            const footerText = document.getElementById('footer-text');
+            
+            if(tabId === 'home') {
+                container.style.display = 'none';
+                topBar.style.display = 'none';
+                footerText.style.display = 'none';
+            } else {
+                container.style.display = 'block';
+                topBar.style.display = 'flex';
+                footerText.style.display = 'block';
+                document.getElementById('breadcrumb-current').innerText = crumbName;
+                if (tabId === 'about') {
+                    footerText.innerText = "House Predictor • About Project";
+                } else {
+                    footerText.innerText = "House Predictor • " + modelName + " Ensemble Model Demo";
+                }
+            }
+            
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        document.getElementById('reg-form').onsubmit = async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const res = await fetch('/predict_regression', { method: 'POST', body: formData });
+            const data = await res.json();
+            const resultDiv = document.getElementById('reg-result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerText = data.prediction || data.error;
+        };
+
+        document.getElementById('class-form').onsubmit = async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const res = await fetch('/predict_classification', { method: 'POST', body: formData });
+            const data = await res.json();
+            const resultDiv = document.getElementById('class-result');
+            const msg = document.getElementById('class-msg');
+            const img = document.getElementById('dt-img');
+            
+            resultDiv.style.display = 'flex';
+            msg.innerText = data.prediction || data.error;
+            
+            if (data.image_url) {
+                img.src = data.image_url + "?t=" + new Date().getTime();
+                img.style.display = 'block';
+            } else {
+                img.style.display = 'none';
+            }
+        };
+        
+        document.getElementById('clust-form').onsubmit = async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const res = await fetch('/generate_dendrogram', { method: 'POST', body: formData });
+            const data = await res.json();
+            const resultDiv = document.getElementById('clust-result');
+            const img = document.getElementById('dendrogram-img');
+            const msg = document.getElementById('clust-msg');
+            
+            resultDiv.style.display = 'block';
+            if (data.image_url) {
+                img.src = data.image_url + "?t=" + new Date().getTime();
+                img.style.display = 'block';
+                msg.innerText = "";
+                resultDiv.style.background = "transparent";
+                resultDiv.style.border = "none";
+            } else {
+                img.style.display = 'none';
+                msg.innerText = data.error || data.message;
+            }
+        };
+    </script>
+</body>
+</html>
