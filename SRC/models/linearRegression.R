@@ -384,15 +384,27 @@ cat("\n========================================\n")
 cat("       PREDICTION RESULT\n")
 cat("========================================\n")
 
-cat(
-  "\nPredicted House Price:",
-  round(final_price[1], 2),
-  "Lakhs\n"
-)
+price_val <- final_price[1]
+if (price_val >= 100) {
+  cat(
+    "\nPredicted House Price:",
+    round(price_val / 100, 2), "Crores (₹", round(price_val, 2), "Lakhs)\n"
+  )
+} else if (price_val < 1) {
+  cat(
+    "\nPredicted House Price:",
+    round(price_val * 100, 2), "Thousands\n"
+  )
+} else {
+  cat(
+    "\nPredicted House Price:",
+    round(price_val, 2), "Lakhs\n"
+  )
+}
 
 cat(
-  "\nApproximate price: ₹",
-  format(round(final_price[1] * 100000, 0), big.mark = ","),
+  "Approximate price: ₹",
+  format(round(price_val * 100000, 0), big.mark = ","),
   "\n"
 )
 

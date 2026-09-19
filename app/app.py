@@ -26,6 +26,18 @@ def get_r_script_path(script_name: str) -> str:
     return src_upper
 
 
+def format_inr_price(lakhs_val: float) -> str:
+    """Normalize price in Lakhs into Crores, Lakhs, or Thousands."""
+    if lakhs_val >= 100.0:
+        crores = lakhs_val / 100.0
+        return f"₹{crores:.2f} Crores (₹{lakhs_val:,.2f} Lakhs)"
+    elif lakhs_val < 1.0:
+        thousands = lakhs_val * 100.0
+        return f"₹{thousands:.2f} Thousands"
+    else:
+        return f"₹{lakhs_val:.2f} Lakhs"
+
+
 @app.route('/')
 def home():
     return render_template('index.html')
@@ -54,8 +66,13 @@ def predict_regression():
         pred_line = next((line for line in output_lines if line.startswith('RESULT:')), None)
 
         if pred_line:
-            pred_value = pred_line.replace('RESULT:', '').strip()
-            prediction = f"Predicted Price: ₹{pred_value} Lakhs (Linear Regression)"
+            pred_raw = pred_line.replace('RESULT:', '').strip()
+            try:
+                lakhs_val = float(pred_raw)
+                formatted_price = format_inr_price(lakhs_val)
+            except ValueError:
+                formatted_price = f"₹{pred_raw} Lakhs"
+            prediction = f"Predicted Price: {formatted_price} (Linear Regression)"
         else:
             prediction = "Error: Could not parse prediction from R output."
 
