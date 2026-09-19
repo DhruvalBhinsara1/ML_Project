@@ -2,6 +2,10 @@ library(rpart)
 library(rpart.plot)
 library(caret)
 
+dir.create("plots", showWarnings = FALSE)
+dir.create("models", showWarnings = FALSE)
+dir.create("results", showWarnings = FALSE)
+
 cat("Packages loaded successfully.\n")
 
 train_data <- read.csv("data/train_data.csv")

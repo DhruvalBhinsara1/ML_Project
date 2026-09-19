@@ -11,7 +11,7 @@ library(ggplot2)
 # ============================================================
 
 data <- read_csv(
-  "DATA/RAW/india_housing_prices.csv",
+  "data/raw/india_housing_prices.csv",
   show_col_types = FALSE
 )
 
@@ -29,7 +29,6 @@ cat("Columns :", ncol(data), "\n")
 
 model_data <- data %>%
   select(
-    State,
     City,
     Property_Type,
     BHK,
@@ -57,7 +56,6 @@ model_data <- data %>%
 
 # Convert categorical columns to factors
 categorical_cols <- c(
-  "State",
   "City",
   "Property_Type",
   "Furnished_Status",
@@ -118,7 +116,6 @@ cat("\nTraining model...\n")
 
 linear_model <- lm(
   log1p(Price_in_Lakhs) ~
-    State +
     City +
     Property_Type +
     BHK +
@@ -300,213 +297,78 @@ cat("Model saved successfully!\n")
 
 
 # ============================================================
-# 12. INTERACTIVE PREDICTION
+# 12. HOUSE PRICE PREDICTION DEMO
 # ============================================================
 
 cat("\n========================================\n")
 cat("       NEW HOUSE PRICE PREDICTION\n")
 cat("========================================\n")
 
+if (interactive()) {
+  # ---------- Numeric input ----------
+  BHK_input <- as.numeric(readline("Enter BHK: "))
+  Size_input <- as.numeric(readline("Enter Size in SqFt: "))
+  Year_input <- as.numeric(readline("Enter Year Built: "))
+  Floor_input <- as.numeric(readline("Enter Floor Number: "))
+  TotalFloors_input <- as.numeric(readline("Enter Total Floors: "))
+  Age_input <- as.numeric(readline("Enter Age of Property: "))
+  Schools_input <- as.numeric(readline("Enter Nearby Schools: "))
+  Hospitals_input <- as.numeric(readline("Enter Nearby Hospitals: "))
 
-# ---------- Numeric input ----------
-
-BHK_input <- as.numeric(
-  readline("Enter BHK: ")
-)
-
-Size_input <- as.numeric(
-  readline("Enter Size in SqFt: ")
-)
-
-Year_input <- as.numeric(
-  readline("Enter Year Built: ")
-)
-
-Floor_input <- as.numeric(
-  readline("Enter Floor Number: ")
-)
-
-TotalFloors_input <- as.numeric(
-  readline("Enter Total Floors: ")
-)
-
-Age_input <- as.numeric(
-  readline("Enter Age of Property: ")
-)
-
-Schools_input <- as.numeric(
-  readline("Enter Nearby Schools: ")
-)
-
-Hospitals_input <- as.numeric(
-  readline("Enter Nearby Hospitals: ")
-)
-
-
-# ---------- Categorical input ----------
-
-get_category <- function(name, levels_available) {
-
-  cat(
-    "\nAvailable", name, "values:\n"
-  )
-
-  print(levels_available)
-
-  value <- readline(
-    paste0("Enter ", name, ": ")
-  )
-
-  value <- trimws(value)
-
-  while (!(value %in% levels_available)) {
-
-    cat(
-      "\nInvalid value. Choose one of:\n"
-    )
-
+  # ---------- Categorical input ----------
+  get_category <- function(name, levels_available) {
+    cat("\nAvailable", name, "values:\n")
     print(levels_available)
-
-    value <- readline(
-      paste0("Enter ", name, ": ")
-    )
-
-    value <- trimws(value)
+    value <- trimws(readline(paste0("Enter ", name, ": ")))
+    while (!(value %in% levels_available)) {
+      cat("\nInvalid value. Choose one of:\n")
+      print(levels_available)
+      value <- trimws(readline(paste0("Enter ", name, ": ")))
+    }
+    factor(value, levels = levels_available)
   }
 
-  factor(
-    value,
-    levels = levels_available
+  City_input <- get_category("City", levels(model_data$City))
+  Property_input <- get_category("Property Type", levels(model_data$Property_Type))
+  Furnished_input <- get_category("Furnished Status", levels(model_data$Furnished_Status))
+  Transport_input <- get_category("Public Transport Accessibility", levels(model_data$Public_Transport_Accessibility))
+  Parking_input <- get_category("Parking Space", levels(model_data$Parking_Space))
+  Security_input <- get_category("Security", levels(model_data$Security))
+  Facing_input <- get_category("Facing", levels(model_data$Facing))
+  Owner_input <- get_category("Owner Type", levels(model_data$Owner_Type))
+  Availability_input <- get_category("Availability Status", levels(model_data$Availability_Status))
+
+  new_house <- data.frame(
+    City = City_input,
+    Property_Type = Property_input,
+    BHK = BHK_input,
+    Size_in_SqFt = Size_input,
+    Year_Built = Year_input,
+    Furnished_Status = Furnished_input,
+    Floor_No = Floor_input,
+    Total_Floors = TotalFloors_input,
+    Age_of_Property = Age_input,
+    Nearby_Schools = Schools_input,
+    Nearby_Hospitals = Hospitals_input,
+    Public_Transport_Accessibility = Transport_input,
+    Parking_Space = Parking_input,
+    Security = Security_input,
+    Facing = Facing_input,
+    Owner_Type = Owner_input,
+    Availability_Status = Availability_input
   )
+} else {
+  # Default sample for non-interactive execution
+  cat("Running sample prediction (3 BHK, 1800 SqFt, Pune)...\n")
+  new_house <- test_data[1, ]
+  new_house$BHK <- 3
+  new_house$Size_in_SqFt <- 1800
+  new_house$Age_of_Property <- 5
+  new_house$City <- factor("Pune", levels = levels(model_data$City))
 }
 
-
-State_input <- get_category(
-  "State",
-  levels(model_data$State)
-)
-
-City_input <- get_category(
-  "City",
-  levels(model_data$City)
-)
-
-Property_input <- get_category(
-  "Property Type",
-  levels(model_data$Property_Type)
-)
-
-Furnished_input <- get_category(
-  "Furnished Status",
-  levels(model_data$Furnished_Status)
-)
-
-Transport_input <- get_category(
-  "Public Transport Accessibility",
-  levels(model_data$Public_Transport_Accessibility)
-)
-
-Parking_input <- get_category(
-  "Parking Space",
-  levels(model_data$Parking_Space)
-)
-
-Security_input <- get_category(
-  "Security",
-  levels(model_data$Security)
-)
-
-Facing_input <- get_category(
-  "Facing",
-  levels(model_data$Facing)
-)
-
-Owner_input <- get_category(
-  "Owner Type",
-  levels(model_data$Owner_Type)
-)
-
-Availability_input <- get_category(
-  "Availability Status",
-  levels(model_data$Availability_Status)
-)
-
-
 # ============================================================
-# 13. VALIDATE INPUT
-# ============================================================
-
-numeric_input <- c(
-  BHK_input,
-  Size_input,
-  Year_input,
-  Floor_input,
-  TotalFloors_input,
-  Age_input,
-  Schools_input,
-  Hospitals_input
-)
-
-if (any(is.na(numeric_input))) {
-  stop(
-    "ERROR: Enter numbers only for numeric fields."
-  )
-}
-
-if (BHK_input <= 0 || Size_input <= 0) {
-  stop(
-    "ERROR: BHK and Size must be greater than zero."
-  )
-}
-
-
-# ============================================================
-# 14. CREATE NEW HOUSE
-# ============================================================
-
-new_house <- data.frame(
-
-  State = State_input,
-
-  City = City_input,
-
-  Property_Type = Property_input,
-
-  BHK = BHK_input,
-
-  Size_in_SqFt = Size_input,
-
-  Year_Built = Year_input,
-
-  Furnished_Status = Furnished_input,
-
-  Floor_No = Floor_input,
-
-  Total_Floors = TotalFloors_input,
-
-  Age_of_Property = Age_input,
-
-  Nearby_Schools = Schools_input,
-
-  Nearby_Hospitals = Hospitals_input,
-
-  Public_Transport_Accessibility =
-    Transport_input,
-
-  Parking_Space = Parking_input,
-
-  Security = Security_input,
-
-  Facing = Facing_input,
-
-  Owner_Type = Owner_input,
-
-  Availability_Status = Availability_input
-)
-
-
-# ============================================================
-# 15. PREDICT
+# 13. PREDICT & DISPLAY FINAL PRICE
 # ============================================================
 
 new_log_prediction <- predict(
@@ -518,24 +380,19 @@ final_price <- expm1(
   new_log_prediction
 )
 
-
-# ============================================================
-# 16. DISPLAY FINAL PRICE
-# ============================================================
-
 cat("\n========================================\n")
 cat("       PREDICTION RESULT\n")
 cat("========================================\n")
 
 cat(
   "\nPredicted House Price:",
-  round(final_price, 2),
+  round(final_price[1], 2),
   "Lakhs\n"
 )
 
 cat(
   "\nApproximate price: ₹",
-  round(final_price * 100000, 0),
+  format(round(final_price[1] * 100000, 0), big.mark = ","),
   "\n"
 )
 

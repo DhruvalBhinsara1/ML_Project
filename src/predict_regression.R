@@ -1,21 +1,25 @@
-# src/predict_regression.R
+# SRC/predict_regression.R
 args <- commandArgs(trailingOnly = TRUE)
 
 if (length(args) < 4) {
-  stop("Usage: Rscript src/predict_regression.R <size> <bhk> <age> <city>")
+  stop("Usage: Rscript SRC/predict_regression.R <size> <bhk> <age> <city>")
 }
 
 size <- as.numeric(args[1])
 bhk <- as.numeric(args[2])
 age <- as.numeric(args[3])
-city <- args[4]
+city <- trimws(args[4])
 
 models_dir <- "models"
 dir.create(models_dir, showWarnings = FALSE)
 model_path <- file.path(models_dir, "linear_regression.rds")
 
 if (!file.exists(model_path)) {
-  source("src/linear_regression.R")
+  if (file.exists("SRC/linear_regression.R")) {
+    source("SRC/linear_regression.R")
+  } else if (file.exists("src/linear_regression.R")) {
+    source("src/linear_regression.R")
+  }
 }
 
 lr_model <- readRDS(model_path)

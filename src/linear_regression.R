@@ -1,6 +1,12 @@
-# src/linear_regression.R
+# SRC/linear_regression.R
 
-source("src/preprocessing.R")
+if (file.exists("SRC/preprocessing.R")) {
+  source("SRC/preprocessing.R")
+} else if (file.exists("src/preprocessing.R")) {
+  source("src/preprocessing.R")
+} else {
+  source("preprocessing.R")
+}
 
 cat("Loading and preprocessing data for Linear Regression...\n")
 df <- preprocess_data()

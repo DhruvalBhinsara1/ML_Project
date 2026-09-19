@@ -1,45 +1,51 @@
-# src/classification.R
+# SRC/classification.R
 
-# Install required packages if not present
-if (!require(rpart)) install.packages('rpart', repos='http://cran.us.r-project.org')
-if (!require(randomForest)) install.packages('randomForest', repos='http://cran.us.r-project.org')
-if (!require(caret)) install.packages('caret', repos='http://cran.us.r-project.org')
-
-library(rpart)
-library(randomForest)
-library(caret)
+suppressPackageStartupMessages({
+  library(rpart)
+  library(randomForest)
+  library(caret)
+  library(rpart.plot)
+})
 
 # Source the preprocessing script
-source("src/preprocessing.R")
+if (file.exists("SRC/preprocessing.R")) {
+  source("SRC/preprocessing.R")
+} else if (file.exists("src/preprocessing.R")) {
+  source("src/preprocessing.R")
+} else {
+  source("preprocessing.R")
+}
 
 # Load and preprocess data
 cat("Loading and preprocessing data...\n")
 df <- preprocess_data()
 
-# We only need the features and Category (target)
-features <- c("Size_in_SqFt", "BHK", "Age_of_Property", "City")
-target <- "Category"
+# Calculate city price scores to avoid 2^41 factor explosion in tree splits
+city_scores <- tapply(df$Price_in_Lakhs, df$City, mean, na.rm = TRUE)
+default_city_score <- mean(df$Price_in_Lakhs, na.rm = TRUE)
+df$City_Score <- as.numeric(city_scores[as.character(df$City)])
+df$City_Score[is.na(df$City_Score)] <- default_city_score
 
-# Create formula
+# Features and target for Classification
+features <- c("Size_in_SqFt", "BHK", "Age_of_Property", "City_Score")
+target <- "Category"
 formula <- as.formula(paste(target, "~", paste(features, collapse = " + ")))
 
 # Train/Test Split
 set.seed(42)
-# Sample down to 5000 rows max to make training fast for the demo
-if (nrow(df) > 5000) {
-    df <- df[sample(nrow(df), 5000), ]
-}
+sample_size <- min(10000, nrow(df))
+df_sample <- df[sample(nrow(df), sample_size), ]
 
-trainIndex <- createDataPartition(df$Category, p = 0.8, list = FALSE)
-train_data <- df[trainIndex, ]
-test_data  <- df[-trainIndex, ]
+trainIndex <- createDataPartition(df_sample$Category, p = 0.8, list = FALSE)
+train_data <- df_sample[trainIndex, ]
+test_data  <- df_sample[-trainIndex, ]
 
 cat("\n=========================================\n")
 cat("      DECISION TREE CLASSIFICATION       \n")
 cat("=========================================\n")
 
 # Train Decision Tree
-dt_model <- rpart(formula, data = train_data, method = "class")
+dt_model <- rpart(formula, data = train_data, method = "class", control = rpart.control(cp = 0.01))
 
 # Predict
 dt_preds <- predict(dt_model, test_data, type = "class")
@@ -48,26 +54,25 @@ dt_preds <- predict(dt_model, test_data, type = "class")
 dt_cm <- confusionMatrix(dt_preds, test_data$Category)
 cat("Decision Tree Accuracy: ", round(dt_cm$overall['Accuracy'] * 100, 2), "%\n")
 print(dt_cm$table)
-
-# For precision, recall, f1, caret provides them in `byClass`
 print(dt_cm$byClass[, c("Precision", "Recall", "F1")])
 
-# Save Decision Tree Plot
-if (!require(rpart.plot)) install.packages('rpart.plot', repos='http://cran.us.r-project.org')
-library(rpart.plot)
+# Save Decision Tree Plots
 dir.create("static", showWarnings = FALSE)
+dir.create("plots", showWarnings = FALSE)
+
 png("static/decision_tree.png", width = 800, height = 600)
-rpart.plot(dt_model, main = "Real Estate Classification Tree", type = 4, extra = 104)
+rpart.plot(dt_model, main = "Real Estate Classification Tree", type = 4, extra = 104, box.palette = "Blues")
 dev.off()
 
-
+png("plots/decision_tree.png", width = 800, height = 600)
+rpart.plot(dt_model, main = "Real Estate Classification Tree", type = 4, extra = 104, box.palette = "Blues")
+dev.off()
 
 cat("\n=========================================\n")
 cat("       RANDOM FOREST CLASSIFICATION      \n")
 cat("=========================================\n")
 
 # Train Random Forest
-# Using a smaller ntree for speed during testing
 rf_model <- randomForest(formula, data = train_data, ntree = 100, importance = TRUE)
 
 # Predict
@@ -82,8 +87,11 @@ print(rf_cm$byClass[, c("Precision", "Recall", "F1")])
 cat("\n--- Feature Importance ---\n")
 print(importance(rf_model))
 
-# Save models for the web app (if needed later)
+# Save models and city mapping for the web app and inference
 dir.create("models", showWarnings = FALSE)
+saveRDS(dt_model, "models/dt_classifier.rds")
+saveRDS(rf_model, "models/rf_classifier.rds")
 saveRDS(dt_model, "models/decision_tree.rds")
 saveRDS(rf_model, "models/random_forest.rds")
-cat("\nModels saved to 'models/' directory.\n")
+saveRDS(list(city_scores = city_scores, default_score = default_city_score), "models/city_mapping.rds")
+cat("\nModels and city mapping saved to 'models/' directory.\n")

@@ -1,17 +1,25 @@
-# src/predict_dendrogram.R
+# SRC/predict_dendrogram.R
 args <- commandArgs(trailingOnly = TRUE)
 
 if (length(args) < 2) {
-  stop("Usage: Rscript src/predict_dendrogram.R <linkage> <clusters>")
+  stop("Usage: Rscript SRC/predict_dendrogram.R <linkage> <clusters>")
 }
 
-linkage <- args[1]
+linkage <- trimws(args[1])
 clusters <- as.numeric(args[2])
 
 dir.create("static", showWarnings = FALSE)
+dir.create("outputs", showWarnings = FALSE)
 plot_path <- "static/dendrogram.png"
 
-source("src/preprocessing.R")
+if (file.exists("SRC/preprocessing.R")) {
+  source("SRC/preprocessing.R")
+} else if (file.exists("src/preprocessing.R")) {
+  source("src/preprocessing.R")
+} else {
+  source("preprocessing.R")
+}
+
 df <- preprocess_data()
 
 features_clust <- c("Size_in_SqFt", "BHK", "Age_of_Property", "Price_in_Lakhs")
@@ -34,7 +42,12 @@ linkage_map <- c(
   "single" = "single"
 )
 
-clustering_model <- hclust(distance_matrix, method = linkage_map[[tolower(linkage)]])
+method_selected <- linkage_map[[tolower(linkage)]]
+if (is.null(method_selected)) {
+  method_selected <- "ward.D2"
+}
+
+clustering_model <- hclust(distance_matrix, method = method_selected)
 
 png(plot_path, width = 1200, height = 800)
 
@@ -52,6 +65,9 @@ rect.hclust(
   k = clusters
 )
 
-dev.off()
+invisible(dev.off())
 
-cat(plot_path)
+# Also save to outputs for standalone usage
+file.copy(plot_path, "outputs/dendrogram.png", overwrite = TRUE)
+
+cat("\nRESULT:", plot_path, "\n")

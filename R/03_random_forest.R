@@ -1,6 +1,10 @@
 library(randomForest)
 library(caret)
 
+dir.create("plots", showWarnings = FALSE)
+dir.create("models", showWarnings = FALSE)
+dir.create("results", showWarnings = FALSE)
+
 cat("Packages loaded successfully.\n")
 
 # ------------------------------------------------------------
@@ -84,9 +88,17 @@ cat("========================================\n")
 
 set.seed(123)
 
+# Subsample if dataset is very large for optimal performance
+if (nrow(rf_train) > 30000) {
+  sample_idx <- createDataPartition(rf_train$Price_Category, p = 30000 / nrow(rf_train), list = FALSE)
+  rf_train_sample <- rf_train[sample_idx, ]
+} else {
+  rf_train_sample <- rf_train
+}
+
 random_forest_model <- randomForest(
   Price_Category ~ .,
-  data = rf_train,
+  data = rf_train_sample,
   ntree = 100,
   mtry = 2,
   importance = TRUE

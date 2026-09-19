@@ -221,7 +221,7 @@ create_dendrogram <- function(
 # MAIN PROGRAM
 # ============================================================
 
-file_path <- "data/india_housing_prices.csv"
+file_path <- "data/raw/india_housing_prices.csv"
 
 cat("Loading data...\n")
 

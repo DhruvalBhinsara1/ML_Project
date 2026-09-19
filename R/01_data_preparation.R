@@ -9,15 +9,24 @@
 # 1. LOAD LIBRARIES
 # ------------------------------------------------------------
 
-library(tidyverse)
-library(caret)
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(readr)
+  library(caret)
+})
 
 
 # ------------------------------------------------------------
 # 2. LOAD DATA
 # ------------------------------------------------------------
 
-data <- read.csv("data/india_housing_prices.csv")
+data_path <- if (file.exists("data/raw/india_housing_prices.csv")) {
+  "data/raw/india_housing_prices.csv"
+} else {
+  "data/india_housing_prices.csv"
+}
+
+data <- read.csv(data_path)
 
 
 # ------------------------------------------------------------

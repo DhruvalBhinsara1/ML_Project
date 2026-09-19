@@ -39,8 +39,8 @@ preprocess_data <- function(filepath = "data/raw/india_housing_prices.csv") {
   return(df_clean)
 }
 
-# If run directly, test the function
-if (!interactive()) {
+# If run directly as main script, test the function
+if (sys.nframe() == 0) {
   df <- preprocess_data()
   print(head(df))
   cat("Preprocessing complete. Data shape: ", dim(df), "\n")

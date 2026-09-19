@@ -1,32 +1,58 @@
+import os
+import subprocess
 from flask import Flask, render_template, request, jsonify
 
-app = Flask(__name__)
+# Compute absolute paths to project directories
+APP_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.abspath(os.path.join(APP_DIR, '..'))
+TEMPLATE_DIR = os.path.join(PROJECT_ROOT, 'templates')
+STATIC_DIR = os.path.join(PROJECT_ROOT, 'static')
+
+app = Flask(
+    __name__,
+    template_folder=TEMPLATE_DIR,
+    static_folder=STATIC_DIR
+)
+
+
+def get_r_script_path(script_name: str) -> str:
+    """Find script in SRC or src directory."""
+    src_upper = os.path.join(PROJECT_ROOT, 'SRC', script_name)
+    src_lower = os.path.join(PROJECT_ROOT, 'src', script_name)
+    if os.path.exists(src_upper):
+        return src_upper
+    if os.path.exists(src_lower):
+        return src_lower
+    return src_upper
+
 
 @app.route('/')
 def home():
     return render_template('index.html')
 
-import subprocess
 
 @app.route('/predict_regression', methods=['POST'])
 def predict_regression():
     try:
-        size = request.form.get('size')
-        bhk = request.form.get('bhk')
-        age = request.form.get('age')
+        size = request.form.get('size', '1500')
+        bhk = request.form.get('bhk', '3')
+        age = request.form.get('age', '5')
         city = request.form.get('city', 'Pune')
 
+        script_path = get_r_script_path('predict_regression.R')
         result = subprocess.run(
-            ['Rscript', 'src/predict_regression.R', size, bhk, age, city],
-            capture_output=True, text=True
+            ['Rscript', script_path, str(size), str(bhk), str(age), str(city)],
+            capture_output=True,
+            text=True,
+            cwd=PROJECT_ROOT
         )
-        
+
         if result.returncode != 0:
-            return jsonify({'error': f"R Error: {result.stderr}"})
-            
+            return jsonify({'error': f"R Error: {result.stderr.strip() or result.stdout.strip()}"})
+
         output_lines = result.stdout.strip().split('\n')
         pred_line = next((line for line in output_lines if line.startswith('RESULT:')), None)
-        
+
         if pred_line:
             pred_value = pred_line.replace('RESULT:', '').strip()
             prediction = f"Predicted Price: ₹{pred_value} Lakhs (Linear Regression)"
@@ -37,25 +63,29 @@ def predict_regression():
     except Exception as e:
         return jsonify({'error': str(e)})
 
+
 @app.route('/predict_classification', methods=['POST'])
 def predict_classification():
     try:
-        size = request.form.get('size')
-        bhk = request.form.get('bhk')
-        age = request.form.get('age')
+        size = request.form.get('size', '1500')
+        bhk = request.form.get('bhk', '3')
+        age = request.form.get('age', '5')
         city = request.form.get('city', 'Pune')
-        
+
+        script_path = get_r_script_path('predict_classification.R')
         result = subprocess.run(
-            ['Rscript', 'src/predict_classification.R', size, bhk, age, city],
-            capture_output=True, text=True
+            ['Rscript', script_path, str(size), str(bhk), str(age), str(city)],
+            capture_output=True,
+            text=True,
+            cwd=PROJECT_ROOT
         )
-        
+
         if result.returncode != 0:
-            return jsonify({'error': f"R Error: {result.stderr}"})
-            
+            return jsonify({'error': f"R Error: {result.stderr.strip() or result.stdout.strip()}"})
+
         output_lines = result.stdout.strip().split('\n')
         pred_line = next((line for line in output_lines if line.startswith('RESULT:')), None)
-        
+
         if pred_line:
             preds = pred_line.replace('RESULT:', '').strip().split('|')
             dt_pred = preds[0].strip() if len(preds) > 0 else "N/A"
@@ -63,30 +93,45 @@ def predict_classification():
             prediction = f"Decision Tree: {dt_pred} | Random Forest: {rf_pred}"
         else:
             prediction = "Error: Could not parse prediction from R output."
-            
-        return jsonify({'prediction': prediction, 'image_url': 'static/decision_tree.png'})
+
+        return jsonify({'prediction': prediction, 'image_url': '/static/decision_tree.png'})
     except Exception as e:
         return jsonify({'error': str(e)})
+
 
 @app.route('/generate_dendrogram', methods=['POST'])
 def generate_dendrogram():
     try:
-        linkage = request.form.get('linkage')
-        clusters = request.form.get('clusters')
-        
+        linkage = request.form.get('linkage', 'ward')
+        clusters = request.form.get('clusters', '3')
+
+        script_path = get_r_script_path('predict_dendrogram.R')
         result = subprocess.run(
-            ['Rscript', 'src/predict_dendrogram.R', linkage, clusters],
-            capture_output=True, text=True
+            ['Rscript', script_path, str(linkage), str(clusters)],
+            capture_output=True,
+            text=True,
+            cwd=PROJECT_ROOT
         )
-        
+
         if result.returncode != 0:
-            return jsonify({'error': f"R Error: {result.stderr}"})
-            
-        image_path = result.stdout.strip().split('\n')[-1]
-        return jsonify({'image_url': f"/{image_path}"})
+            return jsonify({'error': f"R Error: {result.stderr.strip() or result.stdout.strip()}"})
+
+        output_lines = result.stdout.strip().split('\n')
+        res_line = next((line for line in output_lines if line.startswith('RESULT:')), None)
+
+        if res_line:
+            image_path = res_line.replace('RESULT:', '').strip()
+        else:
+            image_path = 'static/dendrogram.png'
+
+        clean_path = image_path.lstrip('/')
+        return jsonify({'image_url': f"/{clean_path}"})
     except Exception as e:
         return jsonify({'error': str(e)})
 
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 5001))
+    print(f" * Server running on http://127.0.0.1:{port}")
+    app.run(host='127.0.0.1', port=port, debug=True)
 

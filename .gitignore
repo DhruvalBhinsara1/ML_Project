@@ -47,7 +47,8 @@ data/processed/*
 models/*.pkl
 !models/.gitkeep
 
-# IDEs
+# IDEs and local assistants
 .idea/
 .vscode/
 *.swp
+.serena/
