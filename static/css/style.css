@@ -427,7 +427,7 @@ h1, h2, h3, h4, h5, .brand-title {
 
 .home-actions-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 16px;
     padding: 0 40px 48px 40px;
     background: var(--slate-50);
@@ -479,6 +479,11 @@ h1, h2, h3, h4, h5, .brand-title {
 .feature-card.clu .feature-card-icon {
     background: #f5f3ff;
     color: var(--purple-600);
+}
+
+.feature-card.knn .feature-card-icon {
+    background: #fef3c7;
+    color: #d97706;
 }
 
 .feature-card h3 {

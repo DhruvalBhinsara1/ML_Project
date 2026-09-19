@@ -675,6 +675,22 @@
 
         </div>
 
+        <!-- KNN Tuning Plot Preview -->
+        <div class="image-preview-card" id="knn-img-card" style="display:none; margin-top: 1.5rem;">
+            <div class="image-preview-header">
+                <div class="image-preview-title">
+                    <i class="fa-solid fa-chart-line" style="color: var(--indigo-600);"></i>
+                    <span>KNN Hyperparameter Optimization (K vs Accuracy)</span>
+                </div>
+                <button type="button" class="zoom-btn" onclick="openLightbox('knn-img', 'KNN Accuracy vs K Optimization')">
+                    <i class="fa-solid fa-magnifying-glass-plus"></i> View Full Size
+                </button>
+            </div>
+            <div class="image-container" onclick="openLightbox('knn-img', 'KNN Accuracy vs K Optimization')">
+                <img id="knn-img" src="" alt="KNN Accuracy vs K Optimization">
+            </div>
+        </div>
+
     </div>
 
 </section>
@@ -684,60 +700,76 @@
 {% block scripts %}
 
 <script>
-
     document.getElementById('recommendation-form').onsubmit = async function(e) {
-
         e.preventDefault();
 
         const btn = document.getElementById('knn-submit-btn');
         const resultCard = document.getElementById('knn-result');
+        const mainBadge = document.getElementById('knn-main-badge');
+        const categorySpan = document.getElementById('knn-category');
+        const budgetProb = document.getElementById('knn-budget-prob');
+        const midProb = document.getElementById('knn-mid-prob');
+        const premiumProb = document.getElementById('knn-premium-prob');
+        const bestK = document.getElementById('knn-best-k');
+        const imgCard = document.getElementById('knn-img-card');
+        const img = document.getElementById('knn-img');
 
         btn.disabled = true;
         btn.classList.add('loading');
 
-        /*
-         * The KNN backend endpoint will be connected here
-         * once the Flask KNN route is available.
-         *
-         * We are intentionally not inventing the endpoint
-         * or response structure at this stage.
-         */
-
         try {
-
             const formData = new FormData(this);
+            const response = await fetch('/predict_knn', {
+                method: 'POST',
+                body: formData
+            });
 
-            console.log("KNN input:", Object.fromEntries(formData.entries()));
+            const data = await response.json();
 
-            /*
-             * TEMPORARY UI TEST
-             *
-             * Remove this block when the actual KNN
-             * Flask endpoint is connected.
-             */
+            if (data.error) {
+                alert('Recommendation Error: ' + data.error);
+                return;
+            }
 
-            setTimeout(() => {
+            const primaryTier = data.category || "Mid-Range";
+            mainBadge.className = 'segment-badge';
 
-                resultCard.style.display = 'block';
+            const tierLower = primaryTier.toLowerCase();
+            if (tierLower.includes('budget')) {
+                mainBadge.classList.add('budget');
+                mainBadge.innerHTML = '<i class="fa-solid fa-wallet"></i> <span id="knn-category">' + primaryTier + ' Tier</span>';
+            } else if (tierLower.includes('premium')) {
+                mainBadge.classList.add('premium');
+                mainBadge.innerHTML = '<i class="fa-solid fa-crown"></i> <span id="knn-category">' + primaryTier + ' Tier</span>';
+            } else {
+                mainBadge.classList.add('mid-range');
+                mainBadge.innerHTML = '<i class="fa-solid fa-building"></i> <span id="knn-category">' + primaryTier + ' Tier</span>';
+            }
 
-                resultCard.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'nearest'
-                });
+            budgetProb.textContent = data.budget_prob;
+            midProb.textContent = data.mid_prob;
+            premiumProb.textContent = data.premium_prob;
+            bestK.textContent = 'K = ' + data.best_k;
 
-            }, 500);
+            if (data.image_url) {
+                img.src = data.image_url + "?t=" + new Date().getTime();
+                imgCard.style.display = 'block';
+            }
 
+            resultCard.style.display = 'block';
+            resultCard.scrollIntoView({
+                behavior: 'smooth',
+                block: 'nearest'
+            });
+
+        } catch (err) {
+            console.error(err);
+            alert('An unexpected error occurred while communicating with the server.');
         } finally {
-
-            setTimeout(() => {
-                btn.disabled = false;
-                btn.classList.remove('loading');
-            }, 500);
-
+            btn.disabled = false;
+            btn.classList.remove('loading');
         }
-
     };
-
 </script>
 
 {% endblock %}

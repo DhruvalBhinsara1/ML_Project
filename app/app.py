@@ -198,8 +198,70 @@ def generate_dendrogram():
         return jsonify({'error': str(e)})
 
 
+@app.route('/predict_knn', methods=['POST'])
+@app.route('/predict_recommendation', methods=['POST'])
+def predict_knn():
+    try:
+        bhk = request.form.get('bhk', '3')
+        size = request.form.get('size', '1800')
+        year_built = request.form.get('year_built', '2020')
+        floor_no = request.form.get('floor_no', '3')
+        total_floors = request.form.get('total_floors', '10')
+        age = request.form.get('age', '5')
+        nearby_schools = request.form.get('nearby_schools', '5')
+        nearby_hospitals = request.form.get('nearby_hospitals', '3')
+
+        script_path = get_r_script_path('predict_knn.R')
+        result = subprocess.run(
+            [
+                'Rscript', script_path,
+                str(bhk), str(size), str(year_built), str(floor_no),
+                str(total_floors), str(age), str(nearby_schools), str(nearby_hospitals)
+            ],
+            capture_output=True,
+            text=True,
+            cwd=PROJECT_ROOT
+        )
+
+        if result.returncode != 0:
+            return jsonify({'error': f"R Error: {result.stderr.strip() or result.stdout.strip()}"})
+
+        output_lines = result.stdout.strip().split('\n')
+        res_line = next((line for line in output_lines if line.startswith('RESULT:')), None)
+
+        if res_line:
+            parts = [p.strip() for p in res_line.replace('RESULT:', '').split('|')]
+            category = parts[0] if len(parts) > 0 else "Unknown"
+            budget_prob = parts[1] if len(parts) > 1 else "0.0"
+            mid_prob = parts[2] if len(parts) > 2 else "0.0"
+            premium_prob = parts[3] if len(parts) > 3 else "0.0"
+            best_k = parts[4] if len(parts) > 4 else "11"
+
+            return jsonify({
+                'category': category,
+                'budget_prob': f"{budget_prob}%",
+                'mid_prob': f"{mid_prob}%",
+                'premium_prob': f"{premium_prob}%",
+                'best_k': best_k,
+                'image_url': '/static/knn_accuracy_vs_k.png',
+                'bhk': bhk,
+                'size': size,
+                'year_built': year_built,
+                'floor_no': floor_no,
+                'total_floors': total_floors,
+                'age': age,
+                'nearby_schools': nearby_schools,
+                'nearby_hospitals': nearby_hospitals
+            })
+        else:
+            return jsonify({'error': "Could not parse prediction from R output."})
+    except Exception as e:
+        return jsonify({'error': str(e)})
+
+
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5001))
     print(f" * Server running on http://127.0.0.1:{port}")
     app.run(host='127.0.0.1', port=port, debug=True)
+
 
