@@ -1,67 +1,91 @@
 {% extends "base.html" %}
 
-{% block title %}House Predictor • Real Estate ML Analytics{% endblock %}
+{% block title %}House Predictor • Empirical Real Estate Analytics{% endblock %}
 
 {% block top_bar %}{% endblock %}
 
 {% block content %}
 <section id="home">
     <div class="welcome-hero">
-        <div class="hero-pill">
-            <i class="fa-solid fa-sparkles"></i> Machine Learning Real Estate Valuation
+        <div class="hero-folio-tag">
+            <span class="folio-index">VOL. I</span>
+            <span class="folio-divider">&bull;</span>
+            <span>STATISTICAL HOUSING APPRAISAL SPECIFICATION</span>
         </div>
-        <h1>Predict, Classify &amp; Cluster<br><span>Property Intelligence</span></h1>
+        <h1>Valuation, Classification &amp;<br><em>Taxonomic Property Matching</em></h1>
         <p>
-            A full-stack machine learning analytics platform powered by R statistical engines 
-            and Flask. Accurately predict market prices, classify property luxury tiers, and visualize hierarchical market clusters.
+            An empirical real-estate analytics platform backed by R statistical computing.
+            Compute calibrated market valuations, categorize luxury tiers, visualize agglomerative dendrograms, 
+            and retrieve direct comparable property units across 200,000+ verified transaction records.
         </p>
     </div>
 
     <div class="home-actions-grid">
         <a href="{{ url_for('regression') }}" class="feature-card reg">
-            <div>
-                <div class="feature-card-icon"><i class="fa-solid fa-chart-line"></i></div>
-                <h3>Price Valuation</h3>
-                <p>Estimate continuous real estate prices with Ordinary Least Squares regression.</p>
+            <div class="card-header-meta">
+                <span class="card-number">01</span>
+                <span class="card-tag">OLS REGRESSION</span>
             </div>
-            <div class="feature-card-cta">Launch Model <i class="fa-solid fa-arrow-right"></i></div>
+            <div class="card-main">
+                <h3>Continuous Price Valuation</h3>
+                <p>Ordinary Least Squares estimation modeling dimensions, layouts, property age, and target-encoded city price indexes.</p>
+            </div>
+            <div class="feature-card-cta">Compute Valuation <i class="fa-solid fa-arrow-right"></i></div>
         </a>
 
         <a href="{{ url_for('classification') }}" class="feature-card cls">
-            <div>
-                <div class="feature-card-icon"><i class="fa-solid fa-sitemap"></i></div>
-                <h3>Tier Classifier</h3>
-                <p>Classify properties into Budget, Mid-Range, or Premium using Decision Tree &amp; RF.</p>
+            <div class="card-header-meta">
+                <span class="card-number">02</span>
+                <span class="card-tag">CART &bull; RF ENSEMBLE</span>
             </div>
-            <div class="feature-card-cta">Launch Model <i class="fa-solid fa-arrow-right"></i></div>
+            <div class="card-main">
+                <h3>Segment Tier Classifier</h3>
+                <p>Segment properties into Budget, Mid-Range, and Premium brackets via recursive partitioning and a 100-tree Random Forest.</p>
+            </div>
+            <div class="feature-card-cta">Classify Tier <i class="fa-solid fa-arrow-right"></i></div>
         </a>
 
         <a href="{{ url_for('clustering') }}" class="feature-card clu">
-            <div>
-                <div class="feature-card-icon"><i class="fa-solid fa-layer-group"></i></div>
-                <h3>Hierarchical Clusters</h3>
-                <p>Generate high-resolution dendrograms grouping properties by structural similarity.</p>
+            <div class="card-header-meta">
+                <span class="card-number">03</span>
+                <span class="card-tag">AGGLOMERATIVE</span>
             </div>
-            <div class="feature-card-cta">Launch Model <i class="fa-solid fa-arrow-right"></i></div>
+            <div class="card-main">
+                <h3>Hierarchical Dendrogram</h3>
+                <p>Generate high-resolution taxonomic dendrograms grouping properties by multi-dimensional Euclidean similarity.</p>
+            </div>
+            <div class="feature-card-cta">Inspect Dendrogram <i class="fa-solid fa-arrow-right"></i></div>
+        </a>
+
+        <a href="{{ url_for('recommendation') }}" class="feature-card knn">
+            <div class="card-header-meta">
+                <span class="card-number">04</span>
+                <span class="card-tag">K-NEAREST NEIGHBORS</span>
+            </div>
+            <div class="card-main">
+                <h3>Property Recommendation</h3>
+                <p>Retrieve actual comparable real estate units and tier probabilities from the 200,000 unit catalog using standardized Euclidean distance.</p>
+            </div>
+            <div class="feature-card-cta">Match Properties <i class="fa-solid fa-arrow-right"></i></div>
         </a>
     </div>
 
     <div class="stats-strip">
         <div class="stat-item">
-            <div class="stat-num">250K+</div>
-            <div class="stat-label">Trained Units</div>
+            <div class="stat-num">200,000</div>
+            <div class="stat-label">Catalog Observations</div>
         </div>
         <div class="stat-item">
             <div class="stat-num">42</div>
-            <div class="stat-label">Metro Cities</div>
+            <div class="stat-label">Municipal Zones</div>
         </div>
         <div class="stat-item">
-            <div class="stat-num">3</div>
-            <div class="stat-label">ML Engines</div>
+            <div class="stat-num">04</div>
+            <div class="stat-label">Statistical Models</div>
         </div>
         <div class="stat-item">
-            <div class="stat-num">&lt; 0.5s</div>
-            <div class="stat-label">Inference Speed</div>
+            <div class="stat-num">~14 ms</div>
+            <div class="stat-label">KNN Retrieval Latency</div>
         </div>
     </div>
 </section>

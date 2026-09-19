@@ -1,11 +1,11 @@
 <aside class="sidebar" id="sidebar">
     <a href="{{ url_for('home') }}" class="sidebar-header">
         <div class="sidebar-logo">
-            <i class="fa-solid fa-house-chimney"></i>
+            <span class="logo-mark">HP</span>
         </div>
-        <div>
+        <div class="sidebar-brand-text">
             <div class="brand-title">House Predictor</div>
-            <div class="brand-subtitle">ML Analytics v1.3</div>
+            <div class="brand-subtitle">Empirical Valuation Engine</div>
         </div>
     </a>
     
@@ -13,19 +13,19 @@
     <nav>
         <a href="{{ url_for('home') }}" class="nav-link {% if active_page == 'home' %}active{% endif %}">
             <div class="nav-link-content">
-                <i class="fa-solid fa-compass"></i>
-                <span>Overview</span>
+                <i class="fa-solid fa-table-columns"></i>
+                <span>Index Overview</span>
             </div>
         </a>
         <a href="{{ url_for('about') }}" class="nav-link {% if active_page == 'about' %}active{% endif %}">
             <div class="nav-link-content">
-                <i class="fa-solid fa-circle-info"></i>
-                <span>About Project</span>
+                <i class="fa-solid fa-book-open"></i>
+                <span>Monograph &amp; Arch</span>
             </div>
         </a>
     </nav>
 
-    <div class="nav-section-title">ML Engines</div>
+    <div class="nav-section-title">Statistical Engines</div>
     <nav>
         <a href="{{ url_for('regression') }}" class="nav-link {% if active_page == 'regression' %}active{% endif %}">
             <div class="nav-link-content">
@@ -39,34 +39,37 @@
                 <i class="fa-solid fa-sitemap"></i>
                 <span>Segment Classifier</span>
             </div>
-            <span class="nav-badge">DT+RF</span>
+            <span class="nav-badge">CART+RF</span>
         </a>
         <a href="{{ url_for('clustering') }}" class="nav-link {% if active_page == 'clustering' %}active{% endif %}">
             <div class="nav-link-content">
                 <i class="fa-solid fa-layer-group"></i>
-                <span>Property Clustering</span>
+                <span>Property Clusters</span>
             </div>
-            <span class="nav-badge">H-Clust</span>
+            <span class="nav-badge">H-CLUST</span>
         </a>
         <a href="{{ url_for('recommendation') }}" class="nav-link {% if active_page == 'recommendation' %}active{% endif %}">
             <div class="nav-link-content">
-                <i class="fa-solid fa-wand-magic-sparkles"></i>
-                <span>Property Recommendation</span>
+                <i class="fa-solid fa-crosshairs"></i>
+                <span>Property Matching</span>
             </div>
             <span class="nav-badge">KNN</span>
         </a>
     </nav>
 
-    <!-- Engine Status Widget -->
+    <!-- Engine Telemetry Widget -->
     <div class="bottom-widget">
         <div class="widget-top">
-            <h4><span class="status-dot"></span> ML Pipeline</h4>
-            <span class="widget-badge">Online</span>
+            <div class="widget-label">
+                <span class="telemetry-dot"></span>
+                <span>SYSTEM STATUS</span>
+            </div>
+            <span class="widget-badge">OPERATIONAL</span>
         </div>
-        <div class="widget-mid">R-Lang Models Ready</div>
+        <div class="widget-mid">R-4.4 Statistical Subprocess</div>
         <div class="widget-bot">
-            <span>250,000+ Records</span>
-            <span>Port 5001</span>
+            <span>200,000 OBS</span>
+            <span>PORT 5001</span>
         </div>
     </div>
 </aside>

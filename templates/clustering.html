@@ -7,10 +7,14 @@
 {% block content %}
 <section id="clustering">
     <div class="form-header">
-        <div class="header-icon clu"><i class="fa-solid fa-layer-group"></i></div>
+        <div class="header-folio">
+            <span class="folio-tag">SPECIFICATION 03</span>
+            <span class="folio-sep">&bull;</span>
+            <span>AGGLOMERATIVE DISTANCE MATRIX</span>
+        </div>
         <div class="header-text">
             <h2>Hierarchical Clustering &amp; Dendrogram</h2>
-            <p>Explore natural groupings and taxonomic relationships across the housing dataset.</p>
+            <p>Group multi-attribute housing data into natural topological clusters using standardized distance metrics and iterative variance linkage.</p>
         </div>
     </div>
 
@@ -19,17 +23,17 @@
             
             <div class="form-group">
                 <div class="form-group-header">
-                    <label><i class="fa-solid fa-link"></i> Linkage Method</label>
-                    <span class="label-hint">Agglomerative</span>
+                    <label><i class="fa-solid fa-code-merge"></i> Linkage Metric</label>
+                    <span class="label-hint">AGGLOMERATION RULE</span>
                 </div>
                 <div class="input-group">
-                    <div class="input-icon"><i class="fa-solid fa-code-merge"></i></div>
+                    <div class="input-icon"><i class="fa-solid fa-diagram-project"></i></div>
                     <div class="select-wrapper">
                         <select name="linkage" id="clust-linkage">
-                            <option value="ward">Ward (Minimum Variance - Recommended)</option>
-                            <option value="complete">Complete (Maximum Distance)</option>
-                            <option value="average">Average (Mean Distance)</option>
-                            <option value="single">Single (Minimum Distance)</option>
+                            <option value="ward">Ward's Minimum Variance (Recommended)</option>
+                            <option value="complete">Complete Linkage (Maximum Distance)</option>
+                            <option value="average">Average Linkage (Mean Distance)</option>
+                            <option value="single">Single Linkage (Minimum Distance)</option>
                         </select>
                     </div>
                 </div>
@@ -37,34 +41,35 @@
 
             <div class="form-group">
                 <div class="form-group-header">
-                    <label><i class="fa-solid fa-cubes"></i> Cluster Cut (k)</label>
-                    <span class="label-hint">2 - 10 Clusters</span>
+                    <label><i class="fa-solid fa-hashtag"></i> Cluster Boundary (k)</label>
+                    <span class="label-hint">2 - 10 CLUSTERS</span>
                 </div>
                 <div class="input-group">
-                    <div class="input-icon"><i class="fa-solid fa-hashtag"></i></div>
+                    <div class="input-icon"><i class="fa-solid fa-layer-group"></i></div>
                     <input type="number" id="clust-k" name="clusters" value="3" min="2" max="10">
+                    <div class="input-suffix">Clusters</div>
                 </div>
             </div>
 
         </div>
 
-        <button type="submit" class="submit-btn" id="clust-submit-btn" style="background: linear-gradient(135deg, var(--purple-600), #6d28d9);">
+        <button type="submit" class="submit-btn" id="clust-submit-btn">
             <i class="fa-solid fa-spinner spinner"></i>
-            <span class="btn-text"><i class="fa-solid fa-diagram-successor"></i> Generate Dendrogram Map</span>
-            <span class="loading-text">Computing Distance Matrix...</span>
+            <span class="btn-text"><i class="fa-solid fa-bezier-curve"></i> Generate Taxonomic Dendrogram</span>
+            <span class="loading-text">Computing Euclidean Distance Matrix...</span>
         </button>
     </form>
 
     <!-- Clustering Result Card -->
-    <div id="clust-result" class="result-card" style="display:none;">
+    <div id="clust-result" class="result-card appraisal-slip" style="display:none;">
         <div class="image-preview-card" style="margin-top: 0;">
             <div class="image-preview-header">
                 <div class="image-preview-title">
-                    <i class="fa-solid fa-layer-group" style="color: var(--purple-600);"></i>
-                    <span id="dendro-title">Hierarchical Cluster Dendrogram</span>
+                    <i class="fa-solid fa-bezier-curve"></i>
+                    <span id="dendro-title">Agglomerative Tree Dendrogram</span>
                 </div>
                 <button class="zoom-btn" onclick="openLightbox('dendrogram-img', 'Hierarchical Cluster Dendrogram')">
-                    <i class="fa-solid fa-magnifying-glass-plus"></i> View Full Size
+                    <i class="fa-solid fa-expand"></i> Inspect Dendrogram
                 </button>
             </div>
             <div class="image-container" onclick="openLightbox('dendrogram-img', 'Hierarchical Cluster Dendrogram')">

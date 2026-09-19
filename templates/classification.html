@@ -7,10 +7,14 @@
 {% block content %}
 <section id="classification">
     <div class="form-header">
-        <div class="header-icon cls"><i class="fa-solid fa-sitemap"></i></div>
+        <div class="header-folio">
+            <span class="folio-tag">SPECIFICATION 02</span>
+            <span class="folio-sep">&bull;</span>
+            <span>RECURSIVE PARTITIONING &bull; RANDOM FOREST</span>
+        </div>
         <div class="header-text">
-            <h2>Segment Classification (DT + Random Forest)</h2>
-            <p>Categorize the real-estate asset into Budget, Mid-Range, or Premium market tiers.</p>
+            <h2>Market Tier Classification</h2>
+            <p>Categorize the real-estate asset into Budget, Mid-Range, or Premium market tiers using Gini-optimal decision trees and an ensemble of 100 decorrelated trees.</p>
         </div>
     </div>
 
@@ -20,11 +24,11 @@
             <!-- Size Input -->
             <div class="form-group">
                 <div class="form-group-header">
-                    <label><i class="fa-solid fa-maximize"></i> Property Size</label>
-                    <span class="label-hint">100 - 20,000 sq.ft</span>
+                    <label><i class="fa-solid fa-ruler-combined"></i> Carpet / Built-up Area</label>
+                    <span class="label-hint">100 - 20,000 SQ.FT</span>
                 </div>
                 <div class="input-group">
-                    <div class="input-icon"><i class="fa-solid fa-ruler-combined"></i></div>
+                    <div class="input-icon"><i class="fa-solid fa-maximize"></i></div>
                     <input type="number" id="cls-size" name="size" value="1800" min="100" max="20000" required>
                     <div class="input-suffix">sq.ft</div>
                 </div>
@@ -40,13 +44,13 @@
             <!-- BHK Input -->
             <div class="form-group">
                 <div class="form-group-header">
-                    <label><i class="fa-solid fa-bed"></i> Bedrooms (BHK)</label>
-                    <span class="label-hint">1 - 10 BHK</span>
+                    <label><i class="fa-solid fa-door-open"></i> Bedroom Configuration</label>
+                    <span class="label-hint">1 - 20 BHK</span>
                 </div>
                 <div class="input-group">
-                    <div class="input-icon"><i class="fa-solid fa-door-open"></i></div>
+                    <div class="input-icon"><i class="fa-solid fa-bed"></i></div>
                     <input type="number" id="cls-bhk" name="bhk" value="3" min="1" max="20" required>
-                    <div class="input-suffix">Rooms</div>
+                    <div class="input-suffix">BHK</div>
                 </div>
                 <div class="chip-group">
                     <button type="button" class="chip-btn" onclick="setPreset('cls-bhk', 1)">1 BHK</button>
@@ -60,16 +64,16 @@
             <!-- Age Input -->
             <div class="form-group">
                 <div class="form-group-header">
-                    <label><i class="fa-regular fa-calendar-check"></i> Property Age</label>
-                    <span class="label-hint">0 - 100 Years</span>
+                    <label><i class="fa-regular fa-clock"></i> Property Age</label>
+                    <span class="label-hint">0 - 150 Years</span>
                 </div>
                 <div class="input-group">
-                    <div class="input-icon"><i class="fa-regular fa-clock"></i></div>
+                    <div class="input-icon"><i class="fa-regular fa-calendar"></i></div>
                     <input type="number" id="cls-age" name="age" value="5" min="0" max="150" required>
                     <div class="input-suffix">Years</div>
                 </div>
                 <div class="chip-group">
-                    <button type="button" class="chip-btn" onclick="setPreset('cls-age', 0)">New (0 yr)</button>
+                    <button type="button" class="chip-btn" onclick="setPreset('cls-age', 0)">Brand New</button>
                     <button type="button" class="chip-btn" onclick="setPreset('cls-age', 3)">3 yrs</button>
                     <button type="button" class="chip-btn active" onclick="setPreset('cls-age', 5)">5 yrs</button>
                     <button type="button" class="chip-btn" onclick="setPreset('cls-age', 10)">10 yrs</button>
@@ -80,11 +84,11 @@
             <!-- City Input -->
             <div class="form-group">
                 <div class="form-group-header">
-                    <label><i class="fa-regular fa-building"></i> Target City</label>
+                    <label><i class="fa-solid fa-location-dot"></i> Municipal Territory</label>
                     <span class="label-hint">42 Cities</span>
                 </div>
                 <div class="input-group">
-                    <div class="input-icon"><i class="fa-solid fa-location-dot"></i></div>
+                    <div class="input-icon"><i class="fa-regular fa-building"></i></div>
                     <div class="select-wrapper">
                         <select id="cls-city" name="city" required>
                             {% include "components/city_options.html" %}
@@ -102,19 +106,23 @@
 
         </div>
 
-        <button type="submit" class="submit-btn" id="class-submit-btn" style="background: linear-gradient(135deg, var(--indigo-600), #4338ca);">
+        <button type="submit" class="submit-btn" id="class-submit-btn">
             <i class="fa-solid fa-spinner spinner"></i>
-            <span class="btn-text"><i class="fa-solid fa-diagram-project"></i> Classify Property Tier</span>
-            <span class="loading-text">Evaluating Decision Tree &amp; Forest...</span>
+            <span class="btn-text"><i class="fa-solid fa-sitemap"></i> Classify Property Tier</span>
+            <span class="loading-text">Evaluating Decision Trees &amp; Forest...</span>
         </button>
     </form>
 
     <!-- Classification Result Card -->
-    <div id="class-result" class="result-card" style="display:none;">
-        
+    <div id="class-result" class="result-card appraisal-slip" style="display:none;">
+        <div class="slip-header">
+            <div class="slip-tag">CLASSIFICATION RESULT</div>
+            <div class="slip-meta">ENSEMBLE CONSENSUS</div>
+        </div>
+
         <div class="class-badge-container">
             <div id="main-segment-badge" class="segment-badge mid-range">
-                <i class="fa-solid fa-layer-group"></i>
+                <span class="segment-bracket-tag">ESTIMATED TIER:</span>
                 <span id="segment-text">Mid-Range</span>
             </div>
         </div>
@@ -122,16 +130,16 @@
         <div class="models-comparison-grid">
             <div class="model-card">
                 <div class="model-card-header">
-                    <div class="model-name"><i class="fa-solid fa-tree" style="color: var(--emerald-600);"></i> Decision Tree</div>
-                    <span class="model-tag">CART</span>
+                    <div class="model-name">Single Decision Tree</div>
+                    <span class="model-tag">CART / GINI</span>
                 </div>
                 <div class="model-pred" id="dt-pred-text">-</div>
             </div>
 
             <div class="model-card">
                 <div class="model-card-header">
-                    <div class="model-name"><i class="fa-solid fa-network-wired" style="color: var(--indigo-600);"></i> Random Forest</div>
-                    <span class="model-tag">Ensemble (100 Trees)</span>
+                    <div class="model-name">Random Forest</div>
+                    <span class="model-tag">100 TREES (BAGGING)</span>
                 </div>
                 <div class="model-pred" id="rf-pred-text">-</div>
             </div>
@@ -140,11 +148,11 @@
         <div class="image-preview-card" id="dt-img-card" style="display:none;">
             <div class="image-preview-header">
                 <div class="image-preview-title">
-                    <i class="fa-solid fa-sitemap" style="color: var(--indigo-600);"></i>
-                    <span>Decision Tree Structure</span>
+                    <i class="fa-solid fa-sitemap"></i>
+                    <span>Decision Tree Dendrogram Structure</span>
                 </div>
                 <button class="zoom-btn" onclick="openLightbox('dt-img', 'Decision Tree Visualization')">
-                    <i class="fa-solid fa-magnifying-glass-plus"></i> View Full Size
+                    <i class="fa-solid fa-expand"></i> Inspect Tree
                 </button>
             </div>
             <div class="image-container" onclick="openLightbox('dt-img', 'Decision Tree Visualization')">

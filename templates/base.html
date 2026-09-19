@@ -6,7 +6,7 @@
     <title>{% block title %}House Predictor • Real Estate ML Analytics{% endblock %}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400;1,6..72,500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     {% block extra_head %}{% endblock %}
@@ -26,12 +26,14 @@
         {% block top_bar %}
         <div class="top-bar" id="top-bar">
             <div class="breadcrumbs">
-                <a href="{{ url_for('home') }}">Home</a>
-                <i class="fa-solid fa-chevron-right"></i>
+                <a href="{{ url_for('home') }}">INDEX</a>
+                <span class="breadcrumb-separator">/</span>
                 <span class="breadcrumb-active">{% block page_name %}Overview{% endblock %}</span>
             </div>
             <div class="top-badge-indicator">
-                <i class="fa-solid fa-bolt"></i> Real Estate ML Engine
+                <span class="indicator-dot"></span>
+                <span class="indicator-label">R-ENGINE 4.4</span>
+                <span class="indicator-status">ACTIVE</span>
             </div>
         </div>
         {% endblock %}
@@ -41,7 +43,7 @@
         </div>
 
         <div class="footer-text" id="footer-text">
-            House Predictor • Real Estate Machine Learning Platform • Port 5001
+            <span>House Predictor</span> — Empirical Valuation &amp; Real Estate Analytics Engine &bull; Port 5001
         </div>
     </main>
 

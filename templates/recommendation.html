@@ -9,15 +9,15 @@
 
     <!-- Page Header -->
     <div class="form-header">
-        <div class="header-icon">
-            <i class="fa-solid fa-wand-magic-sparkles"></i>
+        <div class="header-folio">
+            <span class="folio-tag">SPECIFICATION 04</span>
+            <span class="folio-sep">&bull;</span>
+            <span>K-NEAREST NEIGHBORS RETRIEVAL</span>
         </div>
-
         <div class="header-text">
             <h2>KNN Property Recommendation</h2>
             <p>
-                Analyze property characteristics using the K-Nearest Neighbors
-                model to identify the predicted property price category.
+                Query the 200,000-unit property catalog using standardized Euclidean distance to retrieve direct market comparables and calculate segment tier probabilities.
             </p>
         </div>
     </div>
@@ -538,17 +538,16 @@
             type="submit"
             class="submit-btn"
             id="knn-submit-btn"
-            style="background: linear-gradient(135deg, var(--indigo-600), #4338ca);"
         >
             <i class="fa-solid fa-spinner spinner"></i>
 
             <span class="btn-text">
-                <i class="fa-solid fa-wand-magic-sparkles"></i>
-                Generate Recommendation
+                <i class="fa-solid fa-crosshairs"></i>
+                Retrieve Matching Comparables
             </span>
 
             <span class="loading-text">
-                Running KNN Model...
+                Querying Nearest Neighbors (200k Index)...
             </span>
         </button>
 
@@ -558,9 +557,13 @@
     <!-- KNN Result -->
     <div
         id="knn-result"
-        class="result-card"
+        class="result-card appraisal-slip"
         style="display:none;"
     >
+        <div class="slip-header">
+            <div class="slip-tag">RETRIEVAL REPORT</div>
+            <div class="slip-meta">ALGORITHM: K-NEAREST NEIGHBORS (EUCLIDEAN)</div>
+        </div>
 
         <!-- Main Prediction -->
         <div class="class-badge-container">
@@ -569,8 +572,7 @@
                 id="knn-main-badge"
                 class="segment-badge mid-range"
             >
-                <i class="fa-solid fa-layer-group"></i>
-
+                <span class="segment-bracket-tag">PREDICTED CATEGORY:</span>
                 <span id="knn-category">
                     Mid-Range
                 </span>
@@ -722,12 +724,13 @@
         <div class="properties-showcase-section" id="properties-showcase" style="display:none;">
             <div class="showcase-header">
                 <div>
+                    <div class="slip-tag">CATALOG RETRIEVAL</div>
                     <h3 class="showcase-title">
-                        <i class="fa-solid fa-house-circle-check" style="color: var(--emerald-600);"></i>
-                        Nearest Matching Properties
+                        <i class="fa-solid fa-layer-group"></i>
+                        Direct Comparable Properties
                     </h3>
                     <p class="showcase-subtitle">
-                        Real housing units retrieved from our 200,000-property dataset with the closest Euclidean similarity to your specifications.
+                        Individual property records retrieved from the 200,000-unit empirical catalog exhibiting minimal multi-dimensional distance.
                     </p>
                 </div>
                 <div class="showcase-counter" id="showcase-counter">
@@ -744,11 +747,11 @@
         <div class="image-preview-card" id="knn-img-card" style="display:none; margin-top: 1.75rem;">
             <div class="image-preview-header">
                 <div class="image-preview-title">
-                    <i class="fa-solid fa-chart-line" style="color: var(--indigo-600);"></i>
-                    <span>KNN Hyperparameter Optimization (K vs Accuracy)</span>
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Hyperparameter Tuning Curve (K vs Empirical Accuracy)</span>
                 </div>
                 <button type="button" class="zoom-btn" onclick="openLightbox('knn-img', 'KNN Accuracy vs K Optimization')">
-                    <i class="fa-solid fa-magnifying-glass-plus"></i> View Full Size
+                    <i class="fa-solid fa-expand"></i> Inspect Curve
                 </button>
             </div>
             <div class="image-container" onclick="openLightbox('knn-img', 'KNN Accuracy vs K Optimization')">
@@ -871,43 +874,45 @@
                     let amenitiesHtml = '';
                     if (prop.amenities) {
                         const tags = prop.amenities.split(',').map(s => s.trim()).filter(Boolean);
-                        amenitiesHtml = tags.slice(0, 4).map(tag => `<span class="amenity-chip"><i class="fa-solid fa-check" style="font-size:9px;color:var(--emerald-600);"></i> ${tag}</span>`).join('');
+                        amenitiesHtml = tags.slice(0, 4).map(tag => `<span class="amenity-chip">${tag}</span>`).join('');
                     }
+
+                    const typeUpper = (prop.property_type || 'UNIT').toUpperCase();
+                    const tierUpper = (prop.price_category || 'MID-RANGE').toUpperCase();
 
                     card.innerHTML = `
                         <div class="prop-card-top">
-                            <div class="prop-type-badge"><i class="fa-solid ${typeIcon}"></i> ${prop.property_type || 'Property'}</div>
-                            <div class="prop-match-badge"><i class="fa-solid fa-bolt"></i> ${prop.match_score}% Match</div>
+                            <span class="prop-type-badge">[ ${typeUpper} ]</span>
+                            <span class="prop-match-badge"><i class="fa-solid fa-crosshairs"></i> ${prop.match_score}% SIMILARITY</span>
                         </div>
                         <div class="prop-card-body">
                             <div class="prop-location">
-                                <i class="fa-solid fa-location-dot" style="color: var(--indigo-600);"></i>
                                 <span class="prop-city">${prop.city}</span>
-                                <span class="prop-locality">• ${prop.locality}</span>
+                                <span class="prop-locality">/ ${prop.locality}</span>
                             </div>
                             <div class="prop-price-row">
                                 <div class="prop-price">${prop.formatted_price}</div>
-                                <div class="prop-tier-pill ${tierClass}">${prop.price_category}</div>
+                                <div class="prop-tier-pill ${tierClass}">[ ${tierUpper} ]</div>
                             </div>
                             <div class="prop-specs-grid">
                                 <div class="prop-spec-item" title="Configuration">
-                                    <i class="fa-solid fa-bed"></i> <span>${prop.bhk} BHK</span>
+                                    <span class="spec-dim-label">LAYOUT:</span> <strong>${prop.bhk} BHK</strong>
                                 </div>
                                 <div class="prop-spec-item" title="Carpet / Built-up Size">
-                                    <i class="fa-solid fa-maximize"></i> <span>${Number(prop.size).toLocaleString('en-IN')} sq.ft</span>
+                                    <span class="spec-dim-label">AREA:</span> <strong>${Number(prop.size).toLocaleString('en-IN')} SQ.FT</strong>
                                 </div>
                                 <div class="prop-spec-item" title="Floor Number">
-                                    <i class="fa-solid fa-stairs"></i> <span>Floor ${prop.floor_no}/${prop.total_floors}</span>
+                                    <span class="spec-dim-label">LEVEL:</span> <strong>${prop.floor_no} / ${prop.total_floors}</strong>
                                 </div>
                                 <div class="prop-spec-item" title="Property Age">
-                                    <i class="fa-solid fa-clock"></i> <span>${prop.age} yrs old</span>
+                                    <span class="spec-dim-label">AGE:</span> <strong>${prop.age} YR</strong>
                                 </div>
                             </div>
                             <div class="prop-neighborhood-row">
-                                <span title="Nearby Schools"><i class="fa-solid fa-school" style="color:var(--slate-400);"></i> ${prop.nearby_schools} Schools</span>
-                                <span title="Nearby Hospitals"><i class="fa-solid fa-hospital" style="color:var(--slate-400);"></i> ${prop.nearby_hospitals} Hospitals</span>
-                                <span title="Transit Accessibility"><i class="fa-solid fa-bus" style="color:var(--slate-400);"></i> ${prop.transport} Transit</span>
-                                <span title="Furnishing Status"><i class="fa-solid fa-couch" style="color:var(--slate-400);"></i> ${prop.furnished_status}</span>
+                                <span>SCH: ${prop.nearby_schools}</span>
+                                <span>HOSP: ${prop.nearby_hospitals}</span>
+                                <span>TRANSIT: ${prop.transport.toUpperCase()}</span>
+                                <span>${prop.furnished_status.toUpperCase()}</span>
                             </div>
                             ${amenitiesHtml ? `<div class="prop-amenities-row">${amenitiesHtml}</div>` : ''}
                         </div>
