@@ -33,8 +33,8 @@ COPY . .
 RUN mkdir -p static outputs plots models results data/raw && \
     chmod -R 777 static outputs plots models results
 
-# Expose standard ports (7860 for Hugging Face Spaces, 5001 for local/other hosts)
-EXPOSE 7860 5001
+# Expose standard ports (8000 for Koyeb, 7860 for Hugging Face, 5001 for local)
+EXPOSE 8000 7860 5001
 
 # Start the Flask production application via Gunicorn WSGI
-CMD exec gunicorn --bind 0.0.0.0:${PORT:-7860} --workers 2 --threads 4 --timeout 120 "app.app:app"
+CMD exec gunicorn --bind 0.0.0.0:${PORT:-8000} --workers 2 --threads 4 --timeout 120 "app.app:app"
