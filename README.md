@@ -25,6 +25,7 @@ A comprehensive machine learning system in **R** with an interactive **Flask** w
 │   ├── dt_classifier.rds
 │   ├── rf_classifier.rds
 │   ├── knn_model.rds                   # Serialized KNN bundle (k=11, preProcess)
+│   ├── property_catalog.rds            # 200,000 real property catalog metadata
 │   ├── linear_regression.rds
 │   └── linearRegression.rds
 ├── outputs/                            # Generated standalone plots

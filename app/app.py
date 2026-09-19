@@ -1,3 +1,4 @@
+import json
 import os
 import subprocess
 from flask import Flask, render_template, request, jsonify
@@ -255,6 +256,7 @@ def predict_knn():
         age = get_param('age', '5')
         nearby_schools = get_param('nearby_schools', '5')
         nearby_hospitals = get_param('nearby_hospitals', '3')
+        city = str(get_param('city', 'All')).strip()
 
         # Validate all numeric inputs
         try:
@@ -274,7 +276,8 @@ def predict_knn():
             [
                 'Rscript', script_path,
                 str(val_bhk), str(val_size), str(val_year), str(val_floor),
-                str(val_total_floors), str(val_age), str(val_schools), str(val_hospitals)
+                str(val_total_floors), str(val_age), str(val_schools), str(val_hospitals),
+                city
             ],
             capture_output=True,
             text=True,
@@ -286,6 +289,15 @@ def predict_knn():
 
         output_lines = result.stdout.strip().split('\n')
         res_line = next((line.strip() for line in output_lines if line.strip().startswith('RESULT:')), None)
+        prop_line = next((line.strip() for line in output_lines if line.strip().startswith('PROPERTIES_JSON:')), None)
+
+        recommended_properties = []
+        if prop_line:
+            json_str = prop_line.replace('PROPERTIES_JSON:', '').strip()
+            try:
+                recommended_properties = json.loads(json_str)
+            except Exception as je:
+                print("Warning: could not parse PROPERTIES_JSON:", je)
 
         if res_line:
             parts = [p.strip() for p in res_line.replace('RESULT:', '').split('|')]
@@ -314,6 +326,8 @@ def predict_knn():
                 'premium_pct': premium_pct,
                 'best_k': best_k,
                 'image_url': '/static/knn_accuracy_vs_k.png',
+                'properties': recommended_properties,
+                'city': city,
                 'bhk': val_bhk,
                 'size': val_size,
                 'year_built': val_year,

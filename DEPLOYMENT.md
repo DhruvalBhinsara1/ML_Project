@@ -14,6 +14,7 @@ The application uses a **hybrid Python + R architecture**:
   - `models/dt_classifier.rds` (~33 KB)
   - `models/rf_classifier.rds` (~600 KB)
   - `models/knn_model.rds` (~2.1 MB)
+  - `models/property_catalog.rds` (~3.7 MB)
   - `models/city_mapping.rds` (~800 B)
 
 Because the project relies on both Python and R, **Docker containerization** is the recommended deployment method. All necessary Docker files (`Dockerfile`, `.dockerignore`, `docker-compose.yml`) are already included in the repository.
@@ -139,7 +140,7 @@ If you prefer installing Python and R directly onto an Ubuntu/Debian server:
 
 2. **Install R Packages**:
    ```bash
-   sudo Rscript -e "install.packages(c('rpart', 'randomForest', 'dplyr', 'readr', 'caret'), repos='https://cloud.r-project.org')"
+   sudo Rscript -e "install.packages(c('rpart', 'randomForest', 'dplyr', 'readr', 'caret', 'jsonlite'), repos='https://cloud.r-project.org')"
    ```
 
 3. **Set Up Python Virtual Environment**:

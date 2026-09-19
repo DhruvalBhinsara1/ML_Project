@@ -71,22 +71,32 @@
             }
         }
 
-        // Synchronize active chips when user types manually in an input
+        // Synchronize active chips when user types or selects manually
+        function syncChips(target) {
+            const group = target.closest('.form-group');
+            if (group) {
+                const currentVal = String(target.value).trim();
+                group.querySelectorAll('.chip-btn').forEach(btn => {
+                    const onclickAttr = btn.getAttribute('onclick') || '';
+                    const match = onclickAttr.match(/setPreset\s*\(\s*['"][^'"]+['"]\s*,\s*['"]?([^'")\s]+)['"]?\s*\)/);
+                    if (match && match[1] === currentVal) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+            }
+        }
+
         document.addEventListener('input', function(e) {
-            if (e.target.matches('input[type="number"], input[type="text"]')) {
-                const group = e.target.closest('.form-group');
-                if (group) {
-                    const currentVal = String(e.target.value).trim();
-                    group.querySelectorAll('.chip-btn').forEach(btn => {
-                        const onclickAttr = btn.getAttribute('onclick') || '';
-                        const match = onclickAttr.match(/setPreset\s*\(\s*['"][^'"]+['"]\s*,\s*['"]?([^'")\s]+)['"]?\s*\)/);
-                        if (match && match[1] === currentVal) {
-                            btn.classList.add('active');
-                        } else {
-                            btn.classList.remove('active');
-                        }
-                    });
-                }
+            if (e.target.matches('input[type="number"], input[type="text"], select')) {
+                syncChips(e.target);
+            }
+        });
+
+        document.addEventListener('change', function(e) {
+            if (e.target.matches('select, input[type="number"], input[type="text"]')) {
+                syncChips(e.target);
             }
         });
 

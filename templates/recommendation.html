@@ -496,6 +496,40 @@
                 </div>
             </div>
 
+
+            <!-- Target City Filter -->
+            <div class="form-group full-width">
+                <div class="form-group-header">
+                    <label>
+                        <i class="fa-regular fa-building"></i>
+                        Target City / Market
+                    </label>
+                    <span class="label-hint">Filter by city or search nationwide</span>
+                </div>
+
+                <div class="input-group">
+                    <div class="input-icon">
+                        <i class="fa-solid fa-location-dot"></i>
+                    </div>
+
+                    <div class="select-wrapper">
+                        <select id="knn-city" name="city">
+                            <option value="All" selected>All Cities (Nationwide Search)</option>
+                            {% include "components/city_options.html" %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="chip-group">
+                    <button type="button" class="chip-btn active" onclick="setPreset('knn-city', 'All')">All India</button>
+                    <button type="button" class="chip-btn" onclick="setPreset('knn-city', 'Pune')">Pune</button>
+                    <button type="button" class="chip-btn" onclick="setPreset('knn-city', 'Mumbai')">Mumbai</button>
+                    <button type="button" class="chip-btn" onclick="setPreset('knn-city', 'Bangalore')">Bangalore</button>
+                    <button type="button" class="chip-btn" onclick="setPreset('knn-city', 'New Delhi')">Delhi</button>
+                    <button type="button" class="chip-btn" onclick="setPreset('knn-city', 'Hyderabad')">Hyderabad</button>
+                </div>
+            </div>
+
         </div>
 
 
@@ -684,8 +718,30 @@
 
         </div>
 
+        <!-- Recommended Real Properties Showcase -->
+        <div class="properties-showcase-section" id="properties-showcase" style="display:none;">
+            <div class="showcase-header">
+                <div>
+                    <h3 class="showcase-title">
+                        <i class="fa-solid fa-house-circle-check" style="color: var(--emerald-600);"></i>
+                        Nearest Matching Properties
+                    </h3>
+                    <p class="showcase-subtitle">
+                        Real housing units retrieved from our 200,000-property dataset with the closest Euclidean similarity to your specifications.
+                    </p>
+                </div>
+                <div class="showcase-counter" id="showcase-counter">
+                    <span class="counter-badge">6 Matches</span>
+                </div>
+            </div>
+
+            <div class="properties-grid" id="properties-grid">
+                <!-- Dynamically populated via JS -->
+            </div>
+        </div>
+
         <!-- KNN Tuning Plot Preview -->
-        <div class="image-preview-card" id="knn-img-card" style="display:none; margin-top: 1.5rem;">
+        <div class="image-preview-card" id="knn-img-card" style="display:none; margin-top: 1.75rem;">
             <div class="image-preview-header">
                 <div class="image-preview-title">
                     <i class="fa-solid fa-chart-line" style="color: var(--indigo-600);"></i>
@@ -728,6 +784,9 @@
         const bestK = document.getElementById('knn-best-k');
         const imgCard = document.getElementById('knn-img-card');
         const img = document.getElementById('knn-img');
+        const showcaseSection = document.getElementById('properties-showcase');
+        const propertiesGrid = document.getElementById('properties-grid');
+        const showcaseCounter = document.getElementById('showcase-counter');
 
         btn.disabled = true;
         btn.classList.add('loading');
@@ -782,6 +841,84 @@
             premiumFill.style.width = pPct + '%';
 
             bestK.textContent = 'K = ' + data.best_k;
+
+            // Render Real Recommended Properties
+            if (data.properties && data.properties.length > 0) {
+                propertiesGrid.innerHTML = '';
+                const cityLabel = (data.city && data.city !== 'All') ? `in ${data.city}` : 'Nationwide';
+                showcaseCounter.innerHTML = `<span class="counter-badge"><i class="fa-solid fa-list-check"></i> ${data.properties.length} Matches (${cityLabel})</span>`;
+
+                data.properties.forEach(prop => {
+                    const card = document.createElement('div');
+                    card.className = 'property-card';
+
+                    // Determine property type icon
+                    let typeIcon = 'fa-building';
+                    const propTypeLower = (prop.property_type || '').toLowerCase();
+                    if (propTypeLower.includes('villa')) {
+                        typeIcon = 'fa-house-chimney-window';
+                    } else if (propTypeLower.includes('independent') || propTypeLower.includes('house')) {
+                        typeIcon = 'fa-house';
+                    }
+
+                    // Tier class
+                    let tierClass = 'mid-range';
+                    const tierLower = (prop.price_category || '').toLowerCase();
+                    if (tierLower.includes('budget')) tierClass = 'budget';
+                    else if (tierLower.includes('premium')) tierClass = 'premium';
+
+                    // Amenities chips
+                    let amenitiesHtml = '';
+                    if (prop.amenities) {
+                        const tags = prop.amenities.split(',').map(s => s.trim()).filter(Boolean);
+                        amenitiesHtml = tags.slice(0, 4).map(tag => `<span class="amenity-chip"><i class="fa-solid fa-check" style="font-size:9px;color:var(--emerald-600);"></i> ${tag}</span>`).join('');
+                    }
+
+                    card.innerHTML = `
+                        <div class="prop-card-top">
+                            <div class="prop-type-badge"><i class="fa-solid ${typeIcon}"></i> ${prop.property_type || 'Property'}</div>
+                            <div class="prop-match-badge"><i class="fa-solid fa-bolt"></i> ${prop.match_score}% Match</div>
+                        </div>
+                        <div class="prop-card-body">
+                            <div class="prop-location">
+                                <i class="fa-solid fa-location-dot" style="color: var(--indigo-600);"></i>
+                                <span class="prop-city">${prop.city}</span>
+                                <span class="prop-locality">• ${prop.locality}</span>
+                            </div>
+                            <div class="prop-price-row">
+                                <div class="prop-price">${prop.formatted_price}</div>
+                                <div class="prop-tier-pill ${tierClass}">${prop.price_category}</div>
+                            </div>
+                            <div class="prop-specs-grid">
+                                <div class="prop-spec-item" title="Configuration">
+                                    <i class="fa-solid fa-bed"></i> <span>${prop.bhk} BHK</span>
+                                </div>
+                                <div class="prop-spec-item" title="Carpet / Built-up Size">
+                                    <i class="fa-solid fa-maximize"></i> <span>${Number(prop.size).toLocaleString('en-IN')} sq.ft</span>
+                                </div>
+                                <div class="prop-spec-item" title="Floor Number">
+                                    <i class="fa-solid fa-stairs"></i> <span>Floor ${prop.floor_no}/${prop.total_floors}</span>
+                                </div>
+                                <div class="prop-spec-item" title="Property Age">
+                                    <i class="fa-solid fa-clock"></i> <span>${prop.age} yrs old</span>
+                                </div>
+                            </div>
+                            <div class="prop-neighborhood-row">
+                                <span title="Nearby Schools"><i class="fa-solid fa-school" style="color:var(--slate-400);"></i> ${prop.nearby_schools} Schools</span>
+                                <span title="Nearby Hospitals"><i class="fa-solid fa-hospital" style="color:var(--slate-400);"></i> ${prop.nearby_hospitals} Hospitals</span>
+                                <span title="Transit Accessibility"><i class="fa-solid fa-bus" style="color:var(--slate-400);"></i> ${prop.transport} Transit</span>
+                                <span title="Furnishing Status"><i class="fa-solid fa-couch" style="color:var(--slate-400);"></i> ${prop.furnished_status}</span>
+                            </div>
+                            ${amenitiesHtml ? `<div class="prop-amenities-row">${amenitiesHtml}</div>` : ''}
+                        </div>
+                    `;
+                    propertiesGrid.appendChild(card);
+                });
+
+                showcaseSection.style.display = 'block';
+            } else {
+                showcaseSection.style.display = 'none';
+            }
 
             if (data.image_url) {
                 img.src = data.image_url + "?t=" + new Date().getTime();

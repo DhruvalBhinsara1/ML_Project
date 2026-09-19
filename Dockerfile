@@ -17,7 +17,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Pre-install required R statistical & ML packages
-RUN Rscript -e "install.packages(c('rpart', 'randomForest', 'dplyr', 'readr', 'caret'), repos='https://cloud.r-project.org')"
+RUN Rscript -e "install.packages(c('rpart', 'randomForest', 'dplyr', 'readr', 'caret', 'jsonlite'), repos='https://cloud.r-project.org')"
 
 # Set application working directory
 WORKDIR /app

@@ -163,6 +163,17 @@ class FlaskAppTestCase(unittest.TestCase):
         self.assertIn('budget_pct', data)
         self.assertIn('best_k', data)
         self.assertIn('image_url', data)
+        self.assertIn('properties', data)
+        self.assertGreater(len(data['properties']), 0)
+        first_prop = data['properties'][0]
+        self.assertIn('city', first_prop)
+        self.assertIn('locality', first_prop)
+        self.assertIn('property_type', first_prop)
+        self.assertIn('bhk', first_prop)
+        self.assertIn('size', first_prop)
+        self.assertIn('price_lakhs', first_prop)
+        self.assertIn('formatted_price', first_prop)
+        self.assertIn('match_score', first_prop)
 
     def test_predict_knn_json(self):
         response = self.client.post('/predict_knn', json={
@@ -179,6 +190,27 @@ class FlaskAppTestCase(unittest.TestCase):
         data = response.get_json()
         self.assertIn('category', data)
         self.assertEqual(data['category'], 'Mid-Range')
+        self.assertIn('properties', data)
+        self.assertGreater(len(data['properties']), 0)
+
+    def test_predict_knn_city_filter(self):
+        response = self.client.post('/predict_knn', json={
+            'bhk': 3,
+            'size': 1800,
+            'year_built': 2020,
+            'floor_no': 3,
+            'total_floors': 10,
+            'age': 5,
+            'nearby_schools': 5,
+            'nearby_hospitals': 3,
+            'city': 'Mumbai'
+        })
+        self.assertEqual(response.status_code, 200)
+        data = response.get_json()
+        self.assertIn('properties', data)
+        self.assertGreater(len(data['properties']), 0)
+        for p in data['properties']:
+            self.assertEqual(p['city'], 'Mumbai')
 
     def test_predict_knn_invalid(self):
         response = self.client.post('/predict_knn', json={
