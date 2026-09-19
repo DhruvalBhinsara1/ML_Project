@@ -1,0 +1,65 @@
+<aside class="sidebar" id="sidebar">
+    <a href="{{ url_for('home') }}" class="sidebar-header">
+        <div class="sidebar-logo">
+            <i class="fa-solid fa-house-chimney"></i>
+        </div>
+        <div>
+            <div class="brand-title">House Predictor</div>
+            <div class="brand-subtitle">ML Analytics v1.3</div>
+        </div>
+    </a>
+    
+    <div class="nav-section-title">Navigation</div>
+    <nav>
+        <a href="{{ url_for('home') }}" class="nav-link {% if active_page == 'home' %}active{% endif %}">
+            <div class="nav-link-content">
+                <i class="fa-solid fa-compass"></i>
+                <span>Overview</span>
+            </div>
+        </a>
+        <a href="{{ url_for('about') }}" class="nav-link {% if active_page == 'about' %}active{% endif %}">
+            <div class="nav-link-content">
+                <i class="fa-solid fa-circle-info"></i>
+                <span>About Project</span>
+            </div>
+        </a>
+    </nav>
+
+    <div class="nav-section-title">ML Engines</div>
+    <nav>
+        <a href="{{ url_for('regression') }}" class="nav-link {% if active_page == 'regression' %}active{% endif %}">
+            <div class="nav-link-content">
+                <i class="fa-solid fa-chart-line"></i>
+                <span>Price Valuation</span>
+            </div>
+            <span class="nav-badge">OLS</span>
+        </a>
+        <a href="{{ url_for('classification') }}" class="nav-link {% if active_page == 'classification' %}active{% endif %}">
+            <div class="nav-link-content">
+                <i class="fa-solid fa-sitemap"></i>
+                <span>Segment Classifier</span>
+            </div>
+            <span class="nav-badge">DT+RF</span>
+        </a>
+        <a href="{{ url_for('clustering') }}" class="nav-link {% if active_page == 'clustering' %}active{% endif %}">
+            <div class="nav-link-content">
+                <i class="fa-solid fa-layer-group"></i>
+                <span>Property Clustering</span>
+            </div>
+            <span class="nav-badge">H-Clust</span>
+        </a>
+    </nav>
+
+    <!-- Engine Status Widget -->
+    <div class="bottom-widget">
+        <div class="widget-top">
+            <h4><span class="status-dot"></span> ML Pipeline</h4>
+            <span class="widget-badge">Online</span>
+        </div>
+        <div class="widget-mid">R-Lang Models Ready</div>
+        <div class="widget-bot">
+            <span>250,000+ Records</span>
+            <span>Port 5001</span>
+        </div>
+    </div>
+</aside>

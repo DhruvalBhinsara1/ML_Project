@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}Property Clustering • Dendrogram • House Predictor{% endblock %}
+
+{% block page_name %}Property Clustering{% endblock %}
+
+{% block content %}
+<section id="clustering">
+    <div class="form-header">
+        <div class="header-icon clu"><i class="fa-solid fa-layer-group"></i></div>
+        <div class="header-text">
+            <h2>Hierarchical Clustering &amp; Dendrogram</h2>
+            <p>Explore natural groupings and taxonomic relationships across the housing dataset.</p>
+        </div>
+    </div>
+
+    <form id="clust-form">
+        <div class="form-grid">
+            
+            <div class="form-group">
+                <div class="form-group-header">
+                    <label><i class="fa-solid fa-link"></i> Linkage Method</label>
+                    <span class="label-hint">Agglomerative</span>
+                </div>
+                <div class="input-group">
+                    <div class="input-icon"><i class="fa-solid fa-code-merge"></i></div>
+                    <div class="select-wrapper">
+                        <select name="linkage" id="clust-linkage">
+                            <option value="ward">Ward (Minimum Variance - Recommended)</option>
+                            <option value="complete">Complete (Maximum Distance)</option>
+                            <option value="average">Average (Mean Distance)</option>
+                            <option value="single">Single (Minimum Distance)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="form-group-header">
+                    <label><i class="fa-solid fa-cubes"></i> Cluster Cut (k)</label>
+                    <span class="label-hint">2 - 10 Clusters</span>
+                </div>
+                <div class="input-group">
+                    <div class="input-icon"><i class="fa-solid fa-hashtag"></i></div>
+                    <input type="number" id="clust-k" name="clusters" value="3" min="2" max="10">
+                </div>
+            </div>
+
+        </div>
+
+        <button type="submit" class="submit-btn" id="clust-submit-btn" style="background: linear-gradient(135deg, var(--purple-600), #6d28d9);">
+            <i class="fa-solid fa-spinner spinner"></i>
+            <span class="btn-text"><i class="fa-solid fa-diagram-successor"></i> Generate Dendrogram Map</span>
+            <span class="loading-text">Computing Distance Matrix...</span>
+        </button>
+    </form>
+
+    <!-- Clustering Result Card -->
+    <div id="clust-result" class="result-card" style="display:none;">
+        <div class="image-preview-card" style="margin-top: 0;">
+            <div class="image-preview-header">
+                <div class="image-preview-title">
+                    <i class="fa-solid fa-layer-group" style="color: var(--purple-600);"></i>
+                    <span id="dendro-title">Hierarchical Cluster Dendrogram</span>
+                </div>
+                <button class="zoom-btn" onclick="openLightbox('dendrogram-img', 'Hierarchical Cluster Dendrogram')">
+                    <i class="fa-solid fa-magnifying-glass-plus"></i> View Full Size
+                </button>
+            </div>
+            <div class="image-container" onclick="openLightbox('dendrogram-img', 'Hierarchical Cluster Dendrogram')">
+                <img id="dendrogram-img" src="" alt="Hierarchical Dendrogram">
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.getElementById('clust-form').onsubmit = async function(e) {
+        e.preventDefault();
+        const btn = document.getElementById('clust-submit-btn');
+        const resultCard = document.getElementById('clust-result');
+        const img = document.getElementById('dendrogram-img');
+        const title = document.getElementById('dendro-title');
+
+        btn.disabled = true;
+        btn.classList.add('loading');
+
+        try {
+            const formData = new FormData(this);
+            const linkageVal = formData.get('linkage') || 'ward';
+            const kVal = formData.get('clusters') || '3';
+
+            const res = await fetch('/generate_dendrogram', { method: 'POST', body: formData });
+            const data = await res.json();
+
+            if (data.error) {
+                alert('Clustering Error: ' + data.error);
+                return;
+            }
+
+            if (data.image_url) {
+                img.src = data.image_url + "?t=" + new Date().getTime();
+                title.innerText = `Hierarchical Dendrogram (${linkageVal.toUpperCase()} Linkage, k=${kVal})`;
+                resultCard.style.display = 'block';
+                resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        } catch (err) {
+            alert('Server error generating dendrogram.');
+        } finally {
+            btn.disabled = false;
+            btn.classList.remove('loading');
+        }
+    };
+</script>
+{% endblock %}

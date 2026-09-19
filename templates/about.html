@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}About Project • House Predictor{% endblock %}
+
+{% block page_name %}About Project{% endblock %}
+
+{% block content %}
+<section id="about">
+    <div class="about-section">
+        <div class="about-hero">
+            <div class="about-icon">
+                <i class="fa-solid fa-brain"></i>
+            </div>
+            <h2>About House Predictor</h2>
+            <p>
+                An end-to-end real estate predictive analytics platform integrating multiple statistical and machine learning methodologies to forecast housing valuations, categorize market tiers, and uncover spatial-structural clusters.
+            </p>
+        </div>
+
+        <div class="about-block">
+            <h3><i class="fa-solid fa-bullseye"></i> Core Objectives</h3>
+            <p>
+                Modern housing markets present significant non-linear relationships between physical dimensions, geography, and valuations. This system serves to demonstrate how robust multi-paradigm machine learning (regression, classification, clustering) can provide clear transparency and actionable real-estate insights.
+            </p>
+        </div>
+
+        <div class="about-block">
+            <h3><i class="fa-solid fa-microchip"></i> Machine Learning Architectures</h3>
+            <div class="about-grid">
+                <div class="about-card">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <h4>Linear Regression</h4>
+                    <p>Estimates continuous property pricing using multi-variable Ordinary Least Squares with calibrated target-encoded geographic indices.</p>
+                </div>
+
+                <div class="about-card">
+                    <i class="fa-solid fa-sitemap"></i>
+                    <h4>Decision Tree (CART)</h4>
+                    <p>Constructs explainable hierarchical decision rules based on information gain and Gini impurity to segment properties into distinct price brackets.</p>
+                </div>
+
+                <div class="about-card">
+                    <i class="fa-solid fa-tree"></i>
+                    <h4>Random Forest</h4>
+                    <p>Ensemble of 100 decorrelated decision trees using bootstrap aggregating (bagging) to minimize variance and enhance classification stability.</p>
+                </div>
+
+                <div class="about-card">
+                    <i class="fa-solid fa-layer-group"></i>
+                    <h4>Hierarchical Clustering</h4>
+                    <p>Agglomerative clustering utilizing Ward's minimum variance criteria to construct high-resolution taxonomic dendrograms.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="about-block">
+            <h3><i class="fa-solid fa-laptop-code"></i> Engineering Stack</h3>
+            <div class="tech-list">
+                <span class="tech-tag"><i class="fa-brands fa-python"></i> Python 3.11</span>
+                <span class="tech-tag"><i class="fa-solid fa-server"></i> Flask Web Framework</span>
+                <span class="tech-tag"><i class="fa-brands fa-r-project"></i> R Statistical Language</span>
+                <span class="tech-tag"><i class="fa-solid fa-microchip"></i> rpart &amp; randomForest</span>
+                <span class="tech-tag"><i class="fa-brands fa-html5"></i> Semantic HTML5</span>
+                <span class="tech-tag"><i class="fa-brands fa-css3-alt"></i> Modern Responsive CSS</span>
+                <span class="tech-tag"><i class="fa-brands fa-js"></i> Vanilla JavaScript</span>
+            </div>
+            <div class="about-note">
+                <strong><i class="fa-solid fa-shield-halved"></i> Production Optimization:</strong>
+                All 42 high-cardinality municipal factors are smoothed via target-mean encoding to eliminate exponential factor-split bottlenecks, allowing sub-second inference across all models.
+            </div>
+        </div>
+
+        <div class="about-block">
+            <h3><i class="fa-solid fa-users"></i> Project Collaboration</h3>
+            <p>
+                Developed as a collaborative machine learning research project. Designed with modular architecture separating data pre-processing, statistical modeling in R, and web API presentation in Flask.
+            </p>
+        </div>
+    </div>
+</section>
+{% endblock %}

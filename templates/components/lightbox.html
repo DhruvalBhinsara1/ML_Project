@@ -1,0 +1,17 @@
+<!-- Lightbox Modal for Visual Inspection -->
+<div id="lightbox" class="lightbox-modal" onclick="closeLightboxOnBackdrop(event)">
+    <div class="lightbox-content">
+        <div class="lightbox-header">
+            <div class="lightbox-title" id="lightbox-title">Chart Visualization</div>
+            <div class="lightbox-actions">
+                <a id="lightbox-download" class="lightbox-btn" href="" download="model_visualization.png">
+                    <i class="fa-solid fa-download"></i> Save Image
+                </a>
+                <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
+            </div>
+        </div>
+        <div class="lightbox-body">
+            <img id="lightbox-img" src="" alt="High Resolution Plot">
+        </div>
+    </div>
+</div>

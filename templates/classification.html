@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+
+{% block title %}Segment Classification • Decision Tree & Random Forest • House Predictor{% endblock %}
+
+{% block page_name %}Classification{% endblock %}
+
+{% block content %}
+<section id="classification">
+    <div class="form-header">
+        <div class="header-icon cls"><i class="fa-solid fa-sitemap"></i></div>
+        <div class="header-text">
+            <h2>Segment Classification (DT + Random Forest)</h2>
+            <p>Categorize the real-estate asset into Budget, Mid-Range, or Premium market tiers.</p>
+        </div>
+    </div>
+
+    <form id="class-form">
+        <div class="form-grid">
+            
+            <!-- Size Input -->
+            <div class="form-group">
+                <div class="form-group-header">
+                    <label><i class="fa-solid fa-maximize"></i> Property Size</label>
+                    <span class="label-hint">100 - 20,000 sq.ft</span>
+                </div>
+                <div class="input-group">
+                    <div class="input-icon"><i class="fa-solid fa-ruler-combined"></i></div>
+                    <input type="number" id="cls-size" name="size" value="1800" min="100" max="20000" required>
+                    <div class="input-suffix">sq.ft</div>
+                </div>
+                <div class="chip-group">
+                    <button type="button" class="chip-btn" onclick="setPreset('cls-size', 850)">850 sq.ft</button>
+                    <button type="button" class="chip-btn" onclick="setPreset('cls-size', 1200)">1,200 sq.ft</button>
+                    <button type="button" class="chip-btn active" onclick="setPreset('cls-size', 1800)">1,800 sq.ft</button>
+                    <button type="button" class="chip-btn" onclick="setPreset('cls-size', 2500)">2,500 sq.ft</button>
+                    <button type="button" class="chip-btn" onclick="setPreset('cls-size', 4500)">4,500 sq.ft</button>
+                </div>
+            </div>
+
+            <!-- BHK Input -->
+            <div class="form-group">
+                <div class="form-group-header">
+                    <label><i class="fa-solid fa-bed"></i> Bedrooms (BHK)</label>
+                    <span class="label-hint">1 - 10 BHK</span>
+                </div>
+                <div class="input-group">
+                    <div class="input-icon"><i class="fa-solid fa-door-open"></i></div>
+                    <input type="number" id="cls-bhk" name="bhk" value="3" min="1" max="20" required>
+                    <div class="input-suffix">Rooms</div>
+                </div>
+                <div class="chip-group">
+                    <button type="button" class="chip-btn" onclick="setPreset('cls-bhk', 1)">1 BHK</button>
+                    <button type="button" class="chip-btn" onclick="setPreset('cls-bhk', 2)">2 BHK</button>
+                    <button type="button" class="chip-btn active" onclick="setPreset('cls-bhk', 3)">3 BHK</button>
+                    <button type="button" class="chip-btn" onclick="setPreset('cls-bhk', 4)">4 BHK</button>
+                    <button type="button" class="chip-btn" onclick="setPreset('cls-bhk', 5)">5+ BHK</button>
+                </div>
+            </div>
+
+            <!-- Age Input -->
+            <div class="form-group">
+                <div class="form-group-header">
+                    <label><i class="fa-regular fa-calendar-check"></i> Property Age</label>
+                    <span class="label-hint">0 - 100 Years</span>
+                </div>
+                <div class="input-group">
+                    <div class="input-icon"><i class="fa-regular fa-clock"></i></div>
+                    <input type="number" id="cls-age" name="age" value="5" min="0" max="150" required>
+                    <div class="input-suffix">Years</div>
+                </div>
+                <div class="chip-group">
+                    <button type="button" class="chip-btn" onclick="setPreset('cls-age', 0)">New (0 yr)</button>
+                    <button type="button" class="chip-btn" onclick="setPreset('cls-age', 3)">3 yrs</button>
+                    <button type="button" class="chip-btn active" onclick="setPreset('cls-age', 5)">5 yrs</button>
+                    <button type="button" class="chip-btn" onclick="setPreset('cls-age', 10)">10 yrs</button>
+                    <button type="button" class="chip-btn" onclick="setPreset('cls-age', 20)">20+ yrs</button>
+                </div>
+            </div>
+
+            <!-- City Input -->
+            <div class="form-group">
+                <div class="form-group-header">
+                    <label><i class="fa-regular fa-building"></i> Target City</label>
+                    <span class="label-hint">42 Cities</span>
+                </div>
+                <div class="input-group">
+                    <div class="input-icon"><i class="fa-solid fa-location-dot"></i></div>
+                    <div class="select-wrapper">
+                        <select id="cls-city" name="city" required>
+                            {% include "components/city_options.html" %}
+                        </select>
+                    </div>
+                </div>
+                <div class="chip-group">
+                    <button type="button" class="chip-btn active" onclick="setPreset('cls-city', 'Pune')">Pune</button>
+                    <button type="button" class="chip-btn" onclick="setPreset('cls-city', 'Mumbai')">Mumbai</button>
+                    <button type="button" class="chip-btn" onclick="setPreset('cls-city', 'Bangalore')">Bangalore</button>
+                    <button type="button" class="chip-btn" onclick="setPreset('cls-city', 'New Delhi')">Delhi</button>
+                    <button type="button" class="chip-btn" onclick="setPreset('cls-city', 'Hyderabad')">Hyderabad</button>
+                </div>
+            </div>
+
+        </div>
+
+        <button type="submit" class="submit-btn" id="class-submit-btn" style="background: linear-gradient(135deg, var(--indigo-600), #4338ca);">
+            <i class="fa-solid fa-spinner spinner"></i>
+            <span class="btn-text"><i class="fa-solid fa-diagram-project"></i> Classify Property Tier</span>
+            <span class="loading-text">Evaluating Decision Tree &amp; Forest...</span>
+        </button>
+    </form>
+
+    <!-- Classification Result Card -->
+    <div id="class-result" class="result-card" style="display:none;">
+        
+        <div class="class-badge-container">
+            <div id="main-segment-badge" class="segment-badge mid-range">
+                <i class="fa-solid fa-layer-group"></i>
+                <span id="segment-text">Mid-Range</span>
+            </div>
+        </div>
+
+        <div class="models-comparison-grid">
+            <div class="model-card">
+                <div class="model-card-header">
+                    <div class="model-name"><i class="fa-solid fa-tree" style="color: var(--emerald-600);"></i> Decision Tree</div>
+                    <span class="model-tag">CART</span>
+                </div>
+                <div class="model-pred" id="dt-pred-text">-</div>
+            </div>
+
+            <div class="model-card">
+                <div class="model-card-header">
+                    <div class="model-name"><i class="fa-solid fa-network-wired" style="color: var(--indigo-600);"></i> Random Forest</div>
+                    <span class="model-tag">Ensemble (100 Trees)</span>
+                </div>
+                <div class="model-pred" id="rf-pred-text">-</div>
+            </div>
+        </div>
+
+        <div class="image-preview-card" id="dt-img-card" style="display:none;">
+            <div class="image-preview-header">
+                <div class="image-preview-title">
+                    <i class="fa-solid fa-sitemap" style="color: var(--indigo-600);"></i>
+                    <span>Decision Tree Structure</span>
+                </div>
+                <button class="zoom-btn" onclick="openLightbox('dt-img', 'Decision Tree Visualization')">
+                    <i class="fa-solid fa-magnifying-glass-plus"></i> View Full Size
+                </button>
+            </div>
+            <div class="image-container" onclick="openLightbox('dt-img', 'Decision Tree Visualization')">
+                <img id="dt-img" src="" alt="Decision Tree Visualization">
+            </div>
+        </div>
+
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.getElementById('class-form').onsubmit = async function(e) {
+        e.preventDefault();
+        const btn = document.getElementById('class-submit-btn');
+        const resultCard = document.getElementById('class-result');
+        const badge = document.getElementById('main-segment-badge');
+        const segmentText = document.getElementById('segment-text');
+        const dtText = document.getElementById('dt-pred-text');
+        const rfText = document.getElementById('rf-pred-text');
+        const imgCard = document.getElementById('dt-img-card');
+        const img = document.getElementById('dt-img');
+
+        btn.disabled = true;
+        btn.classList.add('loading');
+
+        try {
+            const formData = new FormData(this);
+            const res = await fetch('/predict_classification', { method: 'POST', body: formData });
+            const data = await res.json();
+
+            if (data.error) {
+                alert('Classification Error: ' + data.error);
+                return;
+            }
+
+            const dtPred = data.dt_prediction || "Budget";
+            const rfPred = data.rf_prediction || dtPred;
+
+            dtText.innerText = dtPred;
+            rfText.innerText = rfPred;
+
+            const primaryTier = rfPred || dtPred;
+            segmentText.innerText = primaryTier;
+            badge.className = 'segment-badge';
+
+            const tierLower = primaryTier.toLowerCase();
+            if (tierLower.includes('budget')) {
+                badge.classList.add('budget');
+                badge.innerHTML = '<i class="fa-solid fa-wallet"></i> <span>' + primaryTier + ' Tier</span>';
+            } else if (tierLower.includes('premium')) {
+                badge.classList.add('premium');
+                badge.innerHTML = '<i class="fa-solid fa-crown"></i> <span>' + primaryTier + ' Tier</span>';
+            } else {
+                badge.classList.add('mid-range');
+                badge.innerHTML = '<i class="fa-solid fa-building"></i> <span>' + primaryTier + ' Tier</span>';
+            }
+
+            if (data.image_url) {
+                img.src = data.image_url + "?t=" + new Date().getTime();
+                imgCard.style.display = 'block';
+            } else {
+                imgCard.style.display = 'none';
+            }
+
+            resultCard.style.display = 'block';
+            resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        } catch (err) {
+            alert('Server error during classification. Please check Flask backend.');
+        } finally {
+            btn.disabled = false;
+            btn.classList.remove('loading');
+        }
+    };
+</script>
+{% endblock %}

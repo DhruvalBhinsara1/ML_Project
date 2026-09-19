@@ -40,7 +40,27 @@ def format_inr_price(lakhs_val: float) -> str:
 
 @app.route('/')
 def home():
-    return render_template('index.html')
+    return render_template('home.html', active_page='home')
+
+
+@app.route('/regression')
+def regression():
+    return render_template('regression.html', active_page='regression')
+
+
+@app.route('/classification')
+def classification():
+    return render_template('classification.html', active_page='classification')
+
+
+@app.route('/clustering')
+def clustering():
+    return render_template('clustering.html', active_page='clustering')
+
+
+@app.route('/about')
+def about():
+    return render_template('about.html', active_page='about')
 
 
 @app.route('/predict_regression', methods=['POST'])

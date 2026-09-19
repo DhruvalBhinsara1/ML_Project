@@ -47,7 +47,21 @@ A comprehensive machine learning system in **R** with an interactive **Flask** w
 │   ├── predict_regression.R            # Regression inference CLI
 │   └── preprocessing.R                 # Shared data loading & preprocessing
 ├── static/                             # Web assets & dynamically generated images
-├── templates/                          # Web UI Jinja2 templates (index.html)
+│   ├── css/style.css                   # Modular stylesheet
+│   ├── decision_tree.png
+│   └── dendrogram.png
+├── templates/                          # Modular Jinja2 web UI templates
+│   ├── base.html                       # Global layout shell & lightbox modal
+│   ├── home.html                       # Landing overview & quick start cards
+│   ├── regression.html                 # Price valuation page (Linear Regression)
+│   ├── classification.html             # Market tier classifier page (DT + RF)
+│   ├── clustering.html                 # Hierarchical clustering & dendrogram page
+│   ├── about.html                      # Project documentation & architecture page
+│   └── components/                     # Reusable Jinja2 UI components
+│       ├── sidebar.html                # Navigation sidebar with active route detection
+│       ├── mobile_header.html          # Responsive mobile header
+│       ├── city_options.html           # 42-city dropdown options
+│       └── lightbox.html               # Chart zoom modal
 └── requirements.txt                    # Python dependencies
 ```
 
@@ -87,6 +101,15 @@ python app/app.py
 
 Then open your browser and navigate to:
 👉 **`http://127.0.0.1:5001`**
+
+#### Available Web Routes:
+| Route | Description |
+| :--- | :--- |
+| **`/`** | Overview & Quick Start dashboard |
+| **`/regression`** | Price Valuation using Linear Regression (OLS) |
+| **`/classification`** | Property Tier Classification (Decision Tree & Random Forest) |
+| **`/clustering`** | Hierarchical Clustering & Dendrogram Generator |
+| **`/about`** | Project Documentation, Model Mathematics & Architecture |
 
 > **Note**: The web app runs on port `5001` by default to avoid macOS AirPlay Receiver port 5000 conflicts. You can customize the port using the `PORT` environment variable:
 > ```bash

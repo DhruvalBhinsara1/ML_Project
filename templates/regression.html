@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block title %}Price Valuation • Linear Regression • House Predictor{% endblock %}
+
+{% block page_name %}Linear Regression{% endblock %}
+
+{% block content %}
+<section id="regression">
+    <div class="form-header">
+        <div class="header-icon"><i class="fa-solid fa-chart-line"></i></div>
+        <div class="header-text">
+            <h2>Linear Regression Price Predictor</h2>
+            <p>Input property dimensions, layout, age, and location to compute an estimated market price.</p>
+        </div>
+    </div>
+
+    <form id="reg-form">
+        <div class="form-grid">
+            
+            <!-- Size Input -->
+            <div class="form-group">
+                <div class="form-group-header">
+                    <label><i class="fa-solid fa-maximize"></i> Property Size</label>
+                    <span class="label-hint">100 - 20,000 sq.ft</span>
+                </div>
+                <div class="input-group">
+                    <div class="input-icon"><i class="fa-solid fa-ruler-combined"></i></div>
+                    <input type="number" id="reg-size" name="size" value="1800" min="100" max="20000" required>
+                    <div class="input-suffix">sq.ft</div>
+                </div>
+                <div class="chip-group">
+                    <button type="button" class="chip-btn" onclick="setPreset('reg-size', 850)">850 sq.ft</button>
+                    <button type="button" class="chip-btn" onclick="setPreset('reg-size', 1200)">1,200 sq.ft</button>
+                    <button type="button" class="chip-btn active" onclick="setPreset('reg-size', 1800)">1,800 sq.ft</button>
+                    <button type="button" class="chip-btn" onclick="setPreset('reg-size', 2500)">2,500 sq.ft</button>
+                    <button type="button" class="chip-btn" onclick="setPreset('reg-size', 4500)">4,500 sq.ft</button>
+                </div>
+            </div>
+
+            <!-- BHK Input -->
+            <div class="form-group">
+                <div class="form-group-header">
+                    <label><i class="fa-solid fa-bed"></i> Bedrooms (BHK)</label>
+                    <span class="label-hint">1 - 10 BHK</span>
+                </div>
+                <div class="input-group">
+                    <div class="input-icon"><i class="fa-solid fa-door-open"></i></div>
+                    <input type="number" id="reg-bhk" name="bhk" value="3" min="1" max="20" required>
+                    <div class="input-suffix">Rooms</div>
+                </div>
+                <div class="chip-group">
+                    <button type="button" class="chip-btn" onclick="setPreset('reg-bhk', 1)">1 BHK</button>
+                    <button type="button" class="chip-btn" onclick="setPreset('reg-bhk', 2)">2 BHK</button>
+                    <button type="button" class="chip-btn active" onclick="setPreset('reg-bhk', 3)">3 BHK</button>
+                    <button type="button" class="chip-btn" onclick="setPreset('reg-bhk', 4)">4 BHK</button>
+                    <button type="button" class="chip-btn" onclick="setPreset('reg-bhk', 5)">5+ BHK</button>
+                </div>
+            </div>
+
+            <!-- Age Input -->
+            <div class="form-group">
+                <div class="form-group-header">
+                    <label><i class="fa-regular fa-calendar-check"></i> Property Age</label>
+                    <span class="label-hint">0 - 100 Years</span>
+                </div>
+                <div class="input-group">
+                    <div class="input-icon"><i class="fa-regular fa-clock"></i></div>
+                    <input type="number" id="reg-age" name="age" value="5" min="0" max="150" required>
+                    <div class="input-suffix">Years</div>
+                </div>
+                <div class="chip-group">
+                    <button type="button" class="chip-btn" onclick="setPreset('reg-age', 0)">New (0 yr)</button>
+                    <button type="button" class="chip-btn" onclick="setPreset('reg-age', 3)">3 yrs</button>
+                    <button type="button" class="chip-btn active" onclick="setPreset('reg-age', 5)">5 yrs</button>
+                    <button type="button" class="chip-btn" onclick="setPreset('reg-age', 10)">10 yrs</button>
+                    <button type="button" class="chip-btn" onclick="setPreset('reg-age', 20)">20+ yrs</button>
+                </div>
+            </div>
+
+            <!-- City Input -->
+            <div class="form-group">
+                <div class="form-group-header">
+                    <label><i class="fa-regular fa-building"></i> Target City</label>
+                    <span class="label-hint">42 Cities</span>
+                </div>
+                <div class="input-group">
+                    <div class="input-icon"><i class="fa-solid fa-location-dot"></i></div>
+                    <div class="select-wrapper">
+                        <select id="reg-city" name="city" required>
+                            {% include "components/city_options.html" %}
+                        </select>
+                    </div>
+                </div>
+                <div class="chip-group">
+                    <button type="button" class="chip-btn active" onclick="setPreset('reg-city', 'Pune')">Pune</button>
+                    <button type="button" class="chip-btn" onclick="setPreset('reg-city', 'Mumbai')">Mumbai</button>
+                    <button type="button" class="chip-btn" onclick="setPreset('reg-city', 'Bangalore')">Bangalore</button>
+                    <button type="button" class="chip-btn" onclick="setPreset('reg-city', 'New Delhi')">Delhi</button>
+                    <button type="button" class="chip-btn" onclick="setPreset('reg-city', 'Hyderabad')">Hyderabad</button>
+                </div>
+            </div>
+
+        </div>
+
+        <button type="submit" class="submit-btn" id="reg-submit-btn">
+            <i class="fa-solid fa-spinner spinner"></i>
+            <span class="btn-text"><i class="fa-solid fa-calculator"></i> Predict Market Price</span>
+            <span class="loading-text">Computing Regression Model...</span>
+        </button>
+    </form>
+
+    <!-- Regression Result Card -->
+    <div id="reg-result" class="result-card" style="display:none;">
+        <div class="hero-price-box">
+            <div class="price-label"><i class="fa-solid fa-tag"></i> Estimated Valuation</div>
+            <div class="price-value" id="reg-formatted-price">₹0.00</div>
+            <div class="price-sub" id="reg-pred-sub">Ordinary Least Squares Model</div>
+        </div>
+
+        <div class="result-details-grid">
+            <div class="detail-card">
+                <div class="detail-label">Rate / Sq.Ft</div>
+                <div class="detail-value" id="reg-rate-sqft">₹0 / sq.ft</div>
+            </div>
+            <div class="detail-card">
+                <div class="detail-label">Location Base</div>
+                <div class="detail-value" id="reg-loc-badge">Pune</div>
+            </div>
+            <div class="detail-card">
+                <div class="detail-label">R-Engine Status</div>
+                <div class="detail-value" style="color: var(--emerald-600);"><i class="fa-solid fa-circle-check"></i> Converged</div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.getElementById('reg-form').onsubmit = async function(e) {
+        e.preventDefault();
+        const btn = document.getElementById('reg-submit-btn');
+        const resultCard = document.getElementById('reg-result');
+        
+        btn.disabled = true;
+        btn.classList.add('loading');
+
+        try {
+            const formData = new FormData(this);
+            const sizeVal = parseFloat(formData.get('size')) || 1800;
+            const cityVal = formData.get('city') || 'Pune';
+
+            const res = await fetch('/predict_regression', { method: 'POST', body: formData });
+            const data = await res.json();
+
+            if (data.error) {
+                alert('Prediction Error: ' + data.error);
+                return;
+            }
+
+            const formattedPrice = data.formatted_price || data.prediction.replace('Predicted Price: ', '').replace(' (Linear Regression)', '');
+            document.getElementById('reg-formatted-price').innerText = formattedPrice;
+            document.getElementById('reg-pred-sub').innerText = `Linear Regression Model • ${cityVal}`;
+            document.getElementById('reg-loc-badge').innerText = cityVal;
+
+            if (data.raw_lakhs) {
+                const priceInRupees = data.raw_lakhs * 100000;
+                const ratePerSqft = Math.round(priceInRupees / sizeVal);
+                document.getElementById('reg-rate-sqft').innerText = `₹${ratePerSqft.toLocaleString('en-IN')} / sq.ft`;
+            } else {
+                document.getElementById('reg-rate-sqft').innerText = 'Computed';
+            }
+
+            resultCard.style.display = 'block';
+            resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        } catch (err) {
+            alert('Server error while predicting price. Please ensure Flask backend is running.');
+        } finally {
+            btn.disabled = false;
+            btn.classList.remove('loading');
+        }
+    };
+</script>
+{% endblock %}
