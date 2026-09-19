@@ -1,0 +1,743 @@
+{% extends "base.html" %}
+
+{% block title %}KNN Property Recommendation • House Predictor{% endblock %}
+
+{% block page_name %}Property Recommendation{% endblock %}
+
+{% block content %}
+<section id="recommendation">
+
+    <!-- Page Header -->
+    <div class="form-header">
+        <div class="header-icon">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+        </div>
+
+        <div class="header-text">
+            <h2>KNN Property Recommendation</h2>
+            <p>
+                Analyze property characteristics using the K-Nearest Neighbors
+                model to identify the predicted property price category.
+            </p>
+        </div>
+    </div>
+
+    <!-- Recommendation Form -->
+    <form id="recommendation-form">
+
+        <div class="form-grid">
+
+            <!-- BHK -->
+            <div class="form-group">
+                <div class="form-group-header">
+                    <label>
+                        <i class="fa-solid fa-bed"></i>
+                        Bedrooms (BHK)
+                    </label>
+                    <span class="label-hint">1 - 20 BHK</span>
+                </div>
+
+                <div class="input-group">
+                    <div class="input-icon">
+                        <i class="fa-solid fa-door-open"></i>
+                    </div>
+
+                    <input
+                        type="number"
+                        id="knn-bhk"
+                        name="bhk"
+                        value="3"
+                        min="1"
+                        max="20"
+                        required
+                    >
+
+                    <div class="input-suffix">BHK</div>
+                </div>
+
+                <div class="chip-group">
+                    <button type="button"
+                            class="chip-btn"
+                            onclick="setPreset('knn-bhk', 1)">
+                        1 BHK
+                    </button>
+
+                    <button type="button"
+                            class="chip-btn"
+                            onclick="setPreset('knn-bhk', 2)">
+                        2 BHK
+                    </button>
+
+                    <button type="button"
+                            class="chip-btn active"
+                            onclick="setPreset('knn-bhk', 3)">
+                        3 BHK
+                    </button>
+
+                    <button type="button"
+                            class="chip-btn"
+                            onclick="setPreset('knn-bhk', 4)">
+                        4 BHK
+                    </button>
+
+                    <button type="button"
+                            class="chip-btn"
+                            onclick="setPreset('knn-bhk', 5)">
+                        5+ BHK
+                    </button>
+                </div>
+            </div>
+
+
+            <!-- Property Size -->
+            <div class="form-group">
+                <div class="form-group-header">
+                    <label>
+                        <i class="fa-solid fa-maximize"></i>
+                        Property Size
+                    </label>
+                    <span class="label-hint">100 - 20,000 sq.ft</span>
+                </div>
+
+                <div class="input-group">
+                    <div class="input-icon">
+                        <i class="fa-solid fa-ruler-combined"></i>
+                    </div>
+
+                    <input
+                        type="number"
+                        id="knn-size"
+                        name="size"
+                        value="1800"
+                        min="100"
+                        max="20000"
+                        required
+                    >
+
+                    <div class="input-suffix">sq.ft</div>
+                </div>
+
+                <div class="chip-group">
+                    <button type="button"
+                            class="chip-btn"
+                            onclick="setPreset('knn-size', 850)">
+                        850 sq.ft
+                    </button>
+
+                    <button type="button"
+                            class="chip-btn"
+                            onclick="setPreset('knn-size', 1200)">
+                        1,200 sq.ft
+                    </button>
+
+                    <button type="button"
+                            class="chip-btn active"
+                            onclick="setPreset('knn-size', 1800)">
+                        1,800 sq.ft
+                    </button>
+
+                    <button type="button"
+                            class="chip-btn"
+                            onclick="setPreset('knn-size', 2500)">
+                        2,500 sq.ft
+                    </button>
+
+                    <button type="button"
+                            class="chip-btn"
+                            onclick="setPreset('knn-size', 4500)">
+                        4,500 sq.ft
+                    </button>
+                </div>
+            </div>
+
+
+            <!-- Year Built -->
+            <div class="form-group">
+                <div class="form-group-header">
+                    <label>
+                        <i class="fa-regular fa-calendar"></i>
+                        Year Built
+                    </label>
+                    <span class="label-hint">Property construction year</span>
+                </div>
+
+                <div class="input-group">
+                    <div class="input-icon">
+                        <i class="fa-solid fa-calendar-days"></i>
+                    </div>
+
+                    <input
+                        type="number"
+                        id="knn-year"
+                        name="year_built"
+                        value="2020"
+                        min="1900"
+                        max="2100"
+                        required
+                    >
+                </div>
+
+                <div class="chip-group">
+                    <button type="button"
+                            class="chip-btn"
+                            onclick="setPreset('knn-year', 2025)">
+                        2025
+                    </button>
+
+                    <button type="button"
+                            class="chip-btn"
+                            onclick="setPreset('knn-year', 2023)">
+                        2023
+                    </button>
+
+                    <button type="button"
+                            class="chip-btn active"
+                            onclick="setPreset('knn-year', 2020)">
+                        2020
+                    </button>
+
+                    <button type="button"
+                            class="chip-btn"
+                            onclick="setPreset('knn-year', 2015)">
+                        2015
+                    </button>
+                </div>
+            </div>
+
+
+            <!-- Floor Number -->
+            <div class="form-group">
+                <div class="form-group-header">
+                    <label>
+                        <i class="fa-solid fa-building"></i>
+                        Floor Number
+                    </label>
+                    <span class="label-hint">Current property floor</span>
+                </div>
+
+                <div class="input-group">
+                    <div class="input-icon">
+                        <i class="fa-solid fa-stairs"></i>
+                    </div>
+
+                    <input
+                        type="number"
+                        id="knn-floor"
+                        name="floor_no"
+                        value="3"
+                        min="0"
+                        max="100"
+                        required
+                    >
+
+                    <div class="input-suffix">Floor</div>
+                </div>
+
+                <div class="chip-group">
+                    <button type="button"
+                            class="chip-btn"
+                            onclick="setPreset('knn-floor', 0)">
+                        Ground
+                    </button>
+
+                    <button type="button"
+                            class="chip-btn"
+                            onclick="setPreset('knn-floor', 2)">
+                        2nd
+                    </button>
+
+                    <button type="button"
+                            class="chip-btn active"
+                            onclick="setPreset('knn-floor', 3)">
+                        3rd
+                    </button>
+
+                    <button type="button"
+                            class="chip-btn"
+                            onclick="setPreset('knn-floor', 5)">
+                        5th
+                    </button>
+
+                    <button type="button"
+                            class="chip-btn"
+                            onclick="setPreset('knn-floor', 10)">
+                        10th
+                    </button>
+                </div>
+            </div>
+
+
+            <!-- Total Floors -->
+            <div class="form-group">
+                <div class="form-group-header">
+                    <label>
+                        <i class="fa-solid fa-layer-group"></i>
+                        Total Floors
+                    </label>
+                    <span class="label-hint">Building height</span>
+                </div>
+
+                <div class="input-group">
+                    <div class="input-icon">
+                        <i class="fa-solid fa-building-columns"></i>
+                    </div>
+
+                    <input
+                        type="number"
+                        id="knn-total-floors"
+                        name="total_floors"
+                        value="10"
+                        min="1"
+                        max="150"
+                        required
+                    >
+
+                    <div class="input-suffix">Floors</div>
+                </div>
+
+                <div class="chip-group">
+                    <button type="button"
+                            class="chip-btn"
+                            onclick="setPreset('knn-total-floors', 5)">
+                        5
+                    </button>
+
+                    <button type="button"
+                            class="chip-btn active"
+                            onclick="setPreset('knn-total-floors', 10)">
+                        10
+                    </button>
+
+                    <button type="button"
+                            class="chip-btn"
+                            onclick="setPreset('knn-total-floors', 15)">
+                        15
+                    </button>
+
+                    <button type="button"
+                            class="chip-btn"
+                            onclick="setPreset('knn-total-floors', 20)">
+                        20
+                    </button>
+                </div>
+            </div>
+
+
+            <!-- Property Age -->
+            <div class="form-group">
+                <div class="form-group-header">
+                    <label>
+                        <i class="fa-regular fa-clock"></i>
+                        Property Age
+                    </label>
+                    <span class="label-hint">Age in years</span>
+                </div>
+
+                <div class="input-group">
+                    <div class="input-icon">
+                        <i class="fa-solid fa-hourglass-half"></i>
+                    </div>
+
+                    <input
+                        type="number"
+                        id="knn-age"
+                        name="age"
+                        value="5"
+                        min="0"
+                        max="150"
+                        required
+                    >
+
+                    <div class="input-suffix">Years</div>
+                </div>
+
+                <div class="chip-group">
+                    <button type="button"
+                            class="chip-btn"
+                            onclick="setPreset('knn-age', 0)">
+                        New
+                    </button>
+
+                    <button type="button"
+                            class="chip-btn"
+                            onclick="setPreset('knn-age', 3)">
+                        3 yrs
+                    </button>
+
+                    <button type="button"
+                            class="chip-btn active"
+                            onclick="setPreset('knn-age', 5)">
+                        5 yrs
+                    </button>
+
+                    <button type="button"
+                            class="chip-btn"
+                            onclick="setPreset('knn-age', 10)">
+                        10 yrs
+                    </button>
+
+                    <button type="button"
+                            class="chip-btn"
+                            onclick="setPreset('knn-age', 20)">
+                        20+ yrs
+                    </button>
+                </div>
+            </div>
+
+
+            <!-- Nearby Schools -->
+            <div class="form-group">
+                <div class="form-group-header">
+                    <label>
+                        <i class="fa-solid fa-school"></i>
+                        Nearby Schools
+                    </label>
+                    <span class="label-hint">Number of schools</span>
+                </div>
+
+                <div class="input-group">
+                    <div class="input-icon">
+                        <i class="fa-solid fa-school"></i>
+                    </div>
+
+                    <input
+                        type="number"
+                        id="knn-schools"
+                        name="nearby_schools"
+                        value="5"
+                        min="0"
+                        max="100"
+                        required
+                    >
+
+                    <div class="input-suffix">Schools</div>
+                </div>
+
+                <div class="chip-group">
+                    <button type="button"
+                            class="chip-btn"
+                            onclick="setPreset('knn-schools', 1)">
+                        1
+                    </button>
+
+                    <button type="button"
+                            class="chip-btn"
+                            onclick="setPreset('knn-schools', 3)">
+                        3
+                    </button>
+
+                    <button type="button"
+                            class="chip-btn active"
+                            onclick="setPreset('knn-schools', 5)">
+                        5
+                    </button>
+
+                    <button type="button"
+                            class="chip-btn"
+                            onclick="setPreset('knn-schools', 10)">
+                        10
+                    </button>
+                </div>
+            </div>
+
+
+            <!-- Nearby Hospitals -->
+            <div class="form-group">
+                <div class="form-group-header">
+                    <label>
+                        <i class="fa-solid fa-hospital"></i>
+                        Nearby Hospitals
+                    </label>
+                    <span class="label-hint">Number of hospitals</span>
+                </div>
+
+                <div class="input-group">
+                    <div class="input-icon">
+                        <i class="fa-solid fa-hospital"></i>
+                    </div>
+
+                    <input
+                        type="number"
+                        id="knn-hospitals"
+                        name="nearby_hospitals"
+                        value="3"
+                        min="0"
+                        max="100"
+                        required
+                    >
+
+                    <div class="input-suffix">Hospitals</div>
+                </div>
+
+                <div class="chip-group">
+                    <button type="button"
+                            class="chip-btn"
+                            onclick="setPreset('knn-hospitals', 1)">
+                        1
+                    </button>
+
+                    <button type="button"
+                            class="chip-btn"
+                            onclick="setPreset('knn-hospitals', 3)">
+                        3
+                    </button>
+
+                    <button type="button"
+                            class="chip-btn active"
+                            onclick="setPreset('knn-hospitals', 5)">
+                        5
+                    </button>
+
+                    <button type="button"
+                            class="chip-btn"
+                            onclick="setPreset('knn-hospitals', 10)">
+                        10
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- Submit Button -->
+        <button
+            type="submit"
+            class="submit-btn"
+            id="knn-submit-btn"
+            style="background: linear-gradient(135deg, var(--indigo-600), #4338ca);"
+        >
+            <i class="fa-solid fa-spinner spinner"></i>
+
+            <span class="btn-text">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                Generate Recommendation
+            </span>
+
+            <span class="loading-text">
+                Running KNN Model...
+            </span>
+        </button>
+
+    </form>
+
+
+    <!-- KNN Result -->
+    <div
+        id="knn-result"
+        class="result-card"
+        style="display:none;"
+    >
+
+        <!-- Main Prediction -->
+        <div class="class-badge-container">
+
+            <div
+                id="knn-main-badge"
+                class="segment-badge mid-range"
+            >
+                <i class="fa-solid fa-layer-group"></i>
+
+                <span id="knn-category">
+                    Mid-Range
+                </span>
+            </div>
+
+        </div>
+
+
+        <!-- Probability Cards -->
+        <div class="models-comparison-grid">
+
+            <div class="model-card">
+
+                <div class="model-card-header">
+                    <div class="model-name">
+                        <i
+                            class="fa-solid fa-wallet"
+                            style="color: var(--emerald-600);"
+                        ></i>
+
+                        Budget
+                    </div>
+
+                    <span class="model-tag">
+                        Probability
+                    </span>
+                </div>
+
+                <div
+                    class="model-pred"
+                    id="knn-budget-prob"
+                >
+                    -
+                </div>
+
+            </div>
+
+
+            <div class="model-card">
+
+                <div class="model-card-header">
+                    <div class="model-name">
+                        <i
+                            class="fa-solid fa-chart-line"
+                            style="color: var(--indigo-600);"
+                        ></i>
+
+                        Mid-Range
+                    </div>
+
+                    <span class="model-tag">
+                        Probability
+                    </span>
+                </div>
+
+                <div
+                    class="model-pred"
+                    id="knn-mid-prob"
+                >
+                    -
+                </div>
+
+            </div>
+
+
+            <div class="model-card">
+
+                <div class="model-card-header">
+                    <div class="model-name">
+                        <i
+                            class="fa-solid fa-crown"
+                            style="color: var(--purple-600);"
+                        ></i>
+
+                        Premium
+                    </div>
+
+                    <span class="model-tag">
+                        Probability
+                    </span>
+                </div>
+
+                <div
+                    class="model-pred"
+                    id="knn-premium-prob"
+                >
+                    -
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Model Information -->
+        <div class="result-details-grid">
+
+            <div class="detail-card">
+                <div class="detail-label">
+                    Model
+                </div>
+
+                <div class="detail-value">
+                    K-Nearest Neighbors
+                </div>
+            </div>
+
+
+            <div class="detail-card">
+                <div class="detail-label">
+                    Best K
+                </div>
+
+                <div
+                    class="detail-value"
+                    id="knn-best-k"
+                >
+                    -
+                </div>
+            </div>
+
+
+            <div class="detail-card">
+                <div class="detail-label">
+                    Status
+                </div>
+
+                <div
+                    class="detail-value"
+                    style="color: var(--emerald-600);"
+                >
+                    <i class="fa-solid fa-circle-check"></i>
+                    Completed
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+{% endblock %}
+
+
+{% block scripts %}
+
+<script>
+
+    document.getElementById('recommendation-form').onsubmit = async function(e) {
+
+        e.preventDefault();
+
+        const btn = document.getElementById('knn-submit-btn');
+        const resultCard = document.getElementById('knn-result');
+
+        btn.disabled = true;
+        btn.classList.add('loading');
+
+        /*
+         * The KNN backend endpoint will be connected here
+         * once the Flask KNN route is available.
+         *
+         * We are intentionally not inventing the endpoint
+         * or response structure at this stage.
+         */
+
+        try {
+
+            const formData = new FormData(this);
+
+            console.log("KNN input:", Object.fromEntries(formData.entries()));
+
+            /*
+             * TEMPORARY UI TEST
+             *
+             * Remove this block when the actual KNN
+             * Flask endpoint is connected.
+             */
+
+            setTimeout(() => {
+
+                resultCard.style.display = 'block';
+
+                resultCard.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'nearest'
+                });
+
+            }, 500);
+
+        } finally {
+
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.classList.remove('loading');
+            }, 500);
+
+        }
+
+    };
+
+</script>
+
+{% endblock %}

@@ -57,6 +57,13 @@ def classification():
 def clustering():
     return render_template('clustering.html', active_page='clustering')
 
+@app.route('/recommendation')
+def recommendation():
+    return render_template(
+        'recommendation.html',
+        active_page='recommendation'
+    )
+
 
 @app.route('/about')
 def about():
