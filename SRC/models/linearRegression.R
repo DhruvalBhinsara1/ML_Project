@@ -387,17 +387,17 @@ cat("========================================\n")
 price_val <- final_price[1]
 if (price_val >= 100) {
   cat(
-    "\nPredicted House Price:",
-    round(price_val / 100, 2), "Crores (₹", round(price_val, 2), "Lakhs)\n"
+    "\nPredicted House Price: ₹",
+    round(price_val / 100, 2), "Crores\n"
   )
 } else if (price_val < 1) {
   cat(
-    "\nPredicted House Price:",
+    "\nPredicted House Price: ₹",
     round(price_val * 100, 2), "Thousands\n"
   )
 } else {
   cat(
-    "\nPredicted House Price:",
+    "\nPredicted House Price: ₹",
     round(price_val, 2), "Lakhs\n"
   )
 }

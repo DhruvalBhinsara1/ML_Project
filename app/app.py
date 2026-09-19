@@ -27,10 +27,10 @@ def get_r_script_path(script_name: str) -> str:
 
 
 def format_inr_price(lakhs_val: float) -> str:
-    """Normalize price in Lakhs into Crores, Lakhs, or Thousands."""
+    """Normalize price in Lakhs into clean Crores, Lakhs, or Thousands."""
     if lakhs_val >= 100.0:
         crores = lakhs_val / 100.0
-        return f"₹{crores:.2f} Crores (₹{lakhs_val:,.2f} Lakhs)"
+        return f"₹{crores:.2f} Crores"
     elif lakhs_val < 1.0:
         thousands = lakhs_val * 100.0
         return f"₹{thousands:.2f} Thousands"
